@@ -1,60 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
-    
-</body>
+  </head>
+  <body></body>
 </html>
 
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Offline Voice Notes by Pablis</title>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <h1>Voice Notes</h1>
-        <button class="theme-toggle" aria-label="Toggle theme">🌓</button>
+      <h1>Voice Notes</h1>
+      <button class="theme-toggle" aria-label="Toggle theme">🌓</button>
     </header>
     <textarea id="notes" placeholder="Type here or record below..."></textarea>
     <div>
-        <button id="recordBtn" disabled>Start Recording</button>
-        <button id="insertBtn" disabled>Insert Transcription</button>
+      <button id="recordBtn" disabled>Start Recording</button>
+      <button id="insertBtn" disabled>Insert Transcription</button>
     </div>
     <div id="status">Press "Start Recording" to begin.</div>
 
     <!-- Load Vosk.js -->
-    <script src="https://cdn.jsdelivr.net/npm/vosk@0.3.44/dist/vosk.min.js" integrity="sha384-5Z6K0QJj1J4Jk4l5z5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vosk@0.3.44/dist/vosk.min.js"></script>
+    <script
+      src="https://unpkg.com/vosk@0.3.44/dist/vosk.min.js"
+      integrity="sha384-5Z6K0QJj1J4Jk4l5z5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5"
+      crossorigin="anonymous"
+    ></script>
 
-<!-- Verification Script -->
-<script>
-// Check if Vosk loaded successfully
-console.log("[VOSK DEBUG] Script loaded, checking Vosk object...");
-console.log("Vosk available?", typeof Vosk !== 'undefined'); // Should be true
-console.log("Vosk version:", Vosk?.version); // Should show version number
-
-if (!window.Vosk) {
-  console.error("❌ Vosk failed to load! Trying fallback...");
-  // Emergency fallback load
-  const fallbackScript = document.createElement('script');
-  fallbackScript.src = "https://cdn.jsdelivr.net/npm/vosk@0.3.44/dist/vosk.min.js";
-  document.head.appendChild(fallbackScript);
-  
-  fallbackScript.onload = () => {
-    console.log("Fallback Vosk loaded:", typeof Vosk);
-    if (!window.Vosk) {
-      console.error("‼️ Critical: Vosk still not available");
-      document.getElementById("status").textContent = "Error: Voice library failed to load";
-    }
-  };
-}
-</script>
+    <!-- Verification Script -->
+    <script>
+        // Verify Vosk loaded
+        if (typeof Vosk === 'undefined') {
+          console.warn("Primary CDN failed, loading backup...");
+          
+          // Try backup CDN
+          const backupScript = document.createElement('script');
+          backupScript.src = "https://cdn.jsdelivr.net/npm/vosk@0.3.22/dist/vosk.min.js";
+          document.head.appendChild(backupScript);
+          
+          backupScript.onerror = () => {
+            console.error("All CDNs failed, using local copy");
+            // Last resort: Host the file yourself in your repo
+            document.write('<script src="lib/vosk.min.js"><\/script>');
+          };
+        }
+        </script>
     <script src="app.js"></script>
-</body>
+  </body>
 </html>
