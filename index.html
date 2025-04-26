@@ -29,7 +29,32 @@
     <div id="status">Press "Start Recording" to begin.</div>
 
     <!-- Load Vosk.js -->
-    <script src="https://cdn.jsdelivr.net/npm/vosk@0.3.44/dist/vosk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vosk@0.3.44/dist/vosk.min.js" integrity="sha384-5Z6K0QJj1J4Jk4l5z5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vosk@0.3.44/dist/vosk.min.js"></script>
+
+<!-- Verification Script -->
+<script>
+// Check if Vosk loaded successfully
+console.log("[VOSK DEBUG] Script loaded, checking Vosk object...");
+console.log("Vosk available?", typeof Vosk !== 'undefined'); // Should be true
+console.log("Vosk version:", Vosk?.version); // Should show version number
+
+if (!window.Vosk) {
+  console.error("❌ Vosk failed to load! Trying fallback...");
+  // Emergency fallback load
+  const fallbackScript = document.createElement('script');
+  fallbackScript.src = "https://cdn.jsdelivr.net/npm/vosk@0.3.44/dist/vosk.min.js";
+  document.head.appendChild(fallbackScript);
+  
+  fallbackScript.onload = () => {
+    console.log("Fallback Vosk loaded:", typeof Vosk);
+    if (!window.Vosk) {
+      console.error("‼️ Critical: Vosk still not available");
+      document.getElementById("status").textContent = "Error: Voice library failed to load";
+    }
+  };
+}
+</script>
     <script src="app.js"></script>
 </body>
 </html>

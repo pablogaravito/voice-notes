@@ -16,23 +16,43 @@ async function initVosk() {
     statusDiv.textContent = "Loading Spanish model...";
     
     try {
-        // Wait for Vosk to be ready
-        await new Promise(resolve => {
-            if (window.Vosk) resolve();
-            window.onVoskReady = resolve;
-        });
+        // First verify Vosk exists
+        if (typeof Vosk === 'undefined') {
+            throw new Error("Vosk library not loaded");
+        }
 
-        console.log("Vosk exists?", typeof Vosk);  // Should print "function"
-        console.log("Model path:", "https://pablogaravito.github.io/voice-notes/models/vosk-model-small-es-0.42");
+        console.log("Vosk version:", Vosk.version);
         
-        model = await Vosk.createModel("https://pablogaravito.github.io/voice-notes/models/vosk-model-small-es-0.42");
+        // Try both model paths
+        const modelPaths = [
+            "models/vosk-model-small-es-0.42",
+            "https://pablogaravito.github.io/voice-notes/models/vosk-model-small-es-0.42",
+            "/voice-notes/models/vosk-model-small-es-0.42"
+        ];
+        
+        let modelLoaded = false;
+        for (const path of modelPaths) {
+            try {
+                console.log("Trying model path:", path);
+                model = await Vosk.createModel(path);
+                modelLoaded = true;
+                break;
+            } catch (e) {
+                console.warn(`Failed with path ${path}:`, e.message);
+            }
+        }
+        
+        if (!modelLoaded) {
+            throw new Error("All model paths failed");
+        }
+
+        console.log("Model successfully loaded:", model);
         recognizer = new model.KaldiRecognizer();
-        recognizer.setWords(true); 
         statusDiv.textContent = "Model loaded! Click 'Start Recording'.";
         recordBtn.disabled = false;
     } catch (error) {
         statusDiv.textContent = `Error: ${error.message}. Check console (F12)`;
-        console.error(error);
+        console.error("Full error:", error);
     }
 }
 
