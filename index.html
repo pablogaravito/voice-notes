@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Offline Voice Notes by Pablis</title>
+</head>
+<body>
+    <header>
+        <h1>Voice Notes</h1>
+        <button class="theme-toggle" aria-label="Toggle theme">🌓</button>
+    </header>
+    <textarea id="notes" placeholder="Type here or record below..."></textarea>
+    <div>
+        <button id="recordBtn" disabled>Start Recording</button>
+        <button id="insertBtn" disabled>Insert Transcription</button>
+    </div>
+    <div id="status">Press "Start Recording" to begin.</div>
+
+    <!-- Load Vosk.js -->
+    <script src="https://cdn.jsdelivr.net/npm/vosk@0.3.44/dist/vosk.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
