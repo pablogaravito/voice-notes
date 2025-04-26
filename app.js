@@ -22,7 +22,7 @@ async function initVosk() {
             window.onVoskReady = resolve;
         });
         
-        model = await Vosk.createModel("models/vosk-model-small-es-0.42");
+        model = await Vosk.createModel("https://pablogaravito.github.io/voice-notes/models/vosk-model-small-es-0.42");
         recognizer = new model.KaldiRecognizer();
         recognizer.setWords(true); 
         statusDiv.textContent = "Model loaded! Click 'Start Recording'.";
