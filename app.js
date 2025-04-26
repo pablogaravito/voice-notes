@@ -21,6 +21,9 @@ async function initVosk() {
             if (window.Vosk) resolve();
             window.onVoskReady = resolve;
         });
+
+        console.log("Vosk exists?", typeof Vosk);  // Should print "function"
+        console.log("Model path:", "https://pablogaravito.github.io/voice-notes/models/vosk-model-small-es-0.42");
         
         model = await Vosk.createModel("https://pablogaravito.github.io/voice-notes/models/vosk-model-small-es-0.42");
         recognizer = new model.KaldiRecognizer();
