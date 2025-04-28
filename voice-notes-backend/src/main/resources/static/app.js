@@ -28,50 +28,48 @@ document.addEventListener("DOMContentLoaded", function () {
   // Visualize audio
   function visualize(stream) {
     stopVisualization();
-    if (!analyser) {
-      analyser = audioContext.createAnalyser();
-      const source = audioContext.createMediaStreamSource(stream);
-      source.connect(analyser);
-      analyser.fftSize = 256;
+    setTimeout(() => {
+            if (!analyser) {
+                analyser = audioContext.createAnalyser();
+                const source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+                analyser.fftSize = 256;
 
-      const bufferLength = analyser.frequencyBinCount;
-      dataArray = new Uint8Array(bufferLength);
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
 
-      // Set up canvas properly
-      canvasCtx = audioVisualizer.getContext("2d");
-      audioVisualizer.width = audioVisualizer.offsetWidth;
-      audioVisualizer.height = audioVisualizer.offsetHeight;
+                // Set up canvas
+                canvasCtx = audioVisualizer.getContext('2d');
+                audioVisualizer.width = audioVisualizer.offsetWidth;
+                audioVisualizer.height = audioVisualizer.offsetHeight;
 
-      function draw() {
-        animationId = requestAnimationFrame(draw);
-        analyser.getByteFrequencyData(dataArray);
+                function draw() {
+                    animationId = requestAnimationFrame(draw);
 
-        canvasCtx.fillStyle = "rgb(200, 200, 200)";
-        canvasCtx.fillRect(0, 0, audioVisualizer.width, audioVisualizer.height);
+                    // Skip if canvas is resetting
+                    if (audioVisualizer.classList.contains('resetting')) return;
 
-        const barWidth = (audioVisualizer.width / bufferLength) * 2.5;
-        let x = 0;
+                    analyser.getByteFrequencyData(dataArray);
 
-        for (let i = 0; i < bufferLength; i++) {
-          const barHeight = (dataArray[i] / 255) * audioVisualizer.height;
+                    canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+                    canvasCtx.fillRect(0, 0, audioVisualizer.width, audioVisualizer.height);
 
-          canvasCtx.fillStyle = `rgb(${Math.min(
-            255,
-            barHeight * 2 + 100
-          )}, 50, 50)`;
-          canvasCtx.fillRect(
-            x,
-            audioVisualizer.height - barHeight,
-            barWidth,
-            barHeight
-          );
+                    const barWidth = (audioVisualizer.width / bufferLength) * 2.5;
+                    let x = 0;
 
-          x += barWidth + 1;
-        }
-      }
+                    for (let i = 0; i < bufferLength; i++) {
+                        const barHeight = (dataArray[i] / 255) * audioVisualizer.height;
 
-      draw();
-    }
+                        canvasCtx.fillStyle = `rgb(${Math.min(255, barHeight * 2 + 100)}, 50, 50)`;
+                        canvasCtx.fillRect(x, audioVisualizer.height - barHeight, barWidth, barHeight);
+
+                        x += barWidth + 1;
+                    }
+                }
+
+                draw();
+            }
+        }, 300);
   }
 
   // Start recording
@@ -124,19 +122,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Stop visualization
   function stopVisualization() {
+  audioVisualizer.classList.add('resetting');
     if (animationId) {
       cancelAnimationFrame(animationId);
       animationId = null;
     }
-
     if (canvasCtx) {
-      canvasCtx.clearRect(0, 0, audioVisualizer.width, audioVisualizer.height);
-      // Draw a blank state
-      //            canvasCtx.fillStyle = 'rgb(200, 200, 200)';
-      //            canvasCtx.fillRect(0, 0, audioVisualizer.width, audioVisualizer.height);}
-      canvasCtx = audioVisualizer.getContext("2d");
-    }
-    analyser = null;
+            // Smooth clear with fade
+            const fadeOut = () => {
+                canvasCtx.fillStyle = 'rgba(200, 200, 200, 0.1)';
+                canvasCtx.globalCompositeOperation = 'destination-out';
+                canvasCtx.fillRect(0, 0, audioVisualizer.width, audioVisualizer.height);
+                canvasCtx.globalCompositeOperation = 'source-over';
+
+                if (animationId) {
+                    requestAnimationFrame(fadeOut);
+                }
+            };
+            fadeOut();
+
+            // Remove resetting class after animation
+            setTimeout(() => {
+                audioVisualizer.classList.remove('resetting');
+                canvasCtx.clearRect(0, 0, audioVisualizer.width, audioVisualizer.height);
+
+                // Full reset of canvas context
+                canvasCtx = null;
+                canvasCtx = audioVisualizer.getContext('2d');
+            }, 300); // Matches the CSS transition duration
+        }
+
+        // Reset analyser
+        analyser = null;
+
   }
 
   // Process recorded audio
