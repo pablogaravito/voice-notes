@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transcriptor de sesiones by Pablis</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Transcriptor de sesiones by Pablis</h1>
+        
+        <canvas id="audioVisualizer" width="800" height="100"></canvas>
+        
+        <button id="recordButton">Comenzar Grabación</button>
+        
+        <div class="timer">
+            <span id="timeRemaining">30</span> segundos restantes
+        </div>
+        
+        <div class="status" id="statusMessage">
+            Presiona el botón para comenzar a grabar
+        </div>
+        
+        <div id="result" class="hidden">
+            <h3>Transcripción:</h3>
+            <div id="transcriptionText"></div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

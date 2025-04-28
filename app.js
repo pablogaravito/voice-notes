@@ -1,128 +1,94 @@
-// DOM elements
-const notesTextarea = document.getElementById('notes');
-const recordBtn = document.getElementById('recordBtn');
-const insertBtn = document.getElementById('insertBtn');
-const statusDiv = document.getElementById('status');
-
-// Vosk variables
-let model;
-let recognizer;
-let audioChunks = [];
+let audioContext;
+let mediaStream;
 let mediaRecorder;
-let isRecording = false;
+let audioChunks = [];
 
-// Initialize Vosk model (Spanish)
-async function initVosk() {
-    statusDiv.textContent = "Loading Spanish model...";
-    
-    try {
-        // First verify Vosk exists
-        if (typeof Vosk === 'undefined') {
-            throw new Error("Vosk library not loaded");
-        }
+const startBtn = document.getElementById('startBtn');
+const stopBtn = document.getElementById('stopBtn');
+const resultText = document.getElementById('resultText');
 
-        console.log("Vosk version:", Vosk.version);
-        
-        // Try both model paths
-        const modelPaths = [
-            "models/vosk-model-small-es-0.42",
-            "https://pablogaravito.github.io/voice-notes/models/vosk-model-small-es-0.42",
-            "/voice-notes/models/vosk-model-small-es-0.42"
-        ];
-        
-        let modelLoaded = false;
-        for (const path of modelPaths) {
-            try {
-                console.log("Trying model path:", path);
-                model = await Vosk.createModel(path);
-                modelLoaded = true;
-                break;
-            } catch (e) {
-                console.warn(`Failed with path ${path}:`, e.message);
-            }
-        }
-        
-        if (!modelLoaded) {
-            throw new Error("All model paths failed");
-        }
+startBtn.onclick = async () => {
+  startBtn.disabled = true;
+  stopBtn.disabled = false;
 
-        console.log("Model successfully loaded:", model);
-        recognizer = new model.KaldiRecognizer();
-        statusDiv.textContent = "Model loaded! Click 'Start Recording'.";
-        recordBtn.disabled = false;
-    } catch (error) {
-        statusDiv.textContent = `Error: ${error.message}. Check console (F12)`;
-        console.error("Full error:", error);
+  audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+
+  mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const source = audioContext.createMediaStreamSource(mediaStream);
+
+  const processor = audioContext.createScriptProcessor(4096, 1, 1);
+  source.connect(processor);
+  processor.connect(audioContext.destination);
+
+  processor.onaudioprocess = (e) => {
+    const input = e.inputBuffer.getChannelData(0);
+    const buffer = new Int16Array(input.length);
+    for (let i = 0; i < input.length; i++) {
+      buffer[i] = Math.max(-1, Math.min(1, input[i])) * 0x7FFF;
     }
-}
+    audioChunks.push(buffer);
+  };
 
-// Start/stop recording
-recordBtn.addEventListener('click', async () => {
-    if (!isRecording) {
-        // Start recording
-        audioChunks = [];
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
-        
-        mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
-        mediaRecorder.start(100); // Collect data every 100ms
-        
-        mediaRecorder.onstop = () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-            processAudio(audioBlob);
-        };
-        
-        recordBtn.textContent = "Stop Recording";
-        statusDiv.textContent = "Recording... (click again to stop)";
-    } else {
-        // Stop recording
-        mediaRecorder.stop();
-        recordBtn.textContent = "Start Recording";
-        statusDiv.textContent = "Processing audio...";
+  window._processor = processor; // save to stop later
+};
+
+stopBtn.onclick = async () => {
+  startBtn.disabled = false;
+  stopBtn.disabled = true;
+
+  window._processor.disconnect();
+  mediaStream.getTracks().forEach(track => track.stop());
+
+  const wavBlob = encodeWAV(audioChunks, 16000);
+  audioChunks = [];
+
+  const arrayBuffer = await wavBlob.arrayBuffer();
+  const uint8Array = new Uint8Array(arrayBuffer);
+
+  const response = await fetch('http://localhost:8080/transcribe', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/octet-stream'
+    },
+    body: recordedBlob
+  });
+
+  const resultJson = await response.json();
+  resultText.value = resultJson.text || 'No se pudo transcribir';
+};
+
+function encodeWAV(chunks, sampleRate) {
+  const bufferLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
+  const buffer = new ArrayBuffer(44 + bufferLength * 2);
+  const view = new DataView(buffer);
+
+  function writeString(view, offset, string) {
+    for (let i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.charCodeAt(i));
     }
-    isRecording = !isRecording;
-});
+  }
 
-// Process recorded audio
-async function processAudio(audioBlob) {
-    const audioContext = new AudioContext();
-    const arrayBuffer = await audioBlob.arrayBuffer();
-    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-    
-    // Convert to 16kHz mono (Vosk requirement)
-    const offlineCtx = new OfflineAudioContext(1, audioBuffer.duration * 16000, 16000);
-    const source = offlineCtx.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(offlineCtx.destination);
-    source.start();
-    
-    const renderedBuffer = await offlineCtx.startRendering();
-    const audioData = renderedBuffer.getChannelData(0);
-    
-    // Feed to Vosk
-    recognizer.acceptWaveform(audioData);
-    const result = JSON.parse(recognizer.result()).text;
-    
-    statusDiv.textContent = `Transcription ready: "${result}"`;
-    insertBtn.disabled = false;
-    
-    // Click "Insert" to add to textarea
-    insertBtn.onclick = () => {
-        const cursorPos = notesTextarea.selectionStart;
-        const textBefore = notesTextarea.value.substring(0, cursorPos);
-        const textAfter = notesTextarea.value.substring(cursorPos);
-        notesTextarea.value = textBefore + result + " " + textAfter;
-        insertBtn.disabled = true;
-    };
+  writeString(view, 0, 'RIFF');
+  view.setUint32(4, 36 + bufferLength * 2, true);
+  writeString(view, 8, 'WAVE');
+  writeString(view, 12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true); // PCM
+  view.setUint16(22, 1, true); // Mono
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true);
+  view.setUint16(32, 2, true); // Block align
+  view.setUint16(34, 16, true); // Bits per sample
+  writeString(view, 36, 'data');
+  view.setUint32(40, bufferLength * 2, true);
+
+  let offset = 44;
+  for (const chunk of chunks) {
+    for (let i = 0; i < chunk.length; i++) {
+      view.setInt16(offset, chunk[i], true);
+      offset += 2;
+    }
+  }
+
+  return new Blob([view], { type: 'audio/wav' });
 }
-
-const themeToggle = document.querySelector('.theme-toggle');
-themeToggle.addEventListener('click', () => {
-  document.body.setAttribute('data-theme', 
-    document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'
-  );
-  themeToggle.textContent = document.body.getAttribute('data-theme') === 'dark' ? '🌞' : '🌒';
-});
-
-// Initialize on page load
-window.onload = initVosk;
