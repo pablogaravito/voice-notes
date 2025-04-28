@@ -53,13 +53,6 @@
             100% { transform: scale(1); }
         }
 
-        .timer {
-            text-align: center;
-            font-size: 18px;
-            margin: 15px 0;
-            color: #7f8c8d;
-        }
-
         #result {
             margin-top: 20px;
             padding: 15px;
@@ -87,5 +80,10 @@
         margin: 20px 0;
         background-color: #ecf0f1;
         border-radius: 5px;
-        display: block; /* Important for canvas */
-    }
+        display: block;
+        transition: opacity 0.3s;
+        }
+
+        #audioVisualizer.resetting {
+            opacity: 0.5;
+        }
