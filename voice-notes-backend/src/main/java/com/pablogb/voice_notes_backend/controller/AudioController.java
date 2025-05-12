@@ -1,5 +1,6 @@
-package com.pablogb.voice_notes_backend;
+package com.pablogb.voice_notes_backend.controller;
 
+import com.pablogb.voice_notes_backend.service.VoskSpeechRecognitionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

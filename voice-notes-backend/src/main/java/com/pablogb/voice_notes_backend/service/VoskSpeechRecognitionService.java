@@ -1,4 +1,4 @@
-package com.pablogb.voice_notes_backend;
+package com.pablogb.voice_notes_backend.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,7 +10,6 @@ import org.vosk.Recognizer;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 @Service
 public class VoskSpeechRecognitionService {
