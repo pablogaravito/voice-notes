@@ -88,8 +88,24 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       mediaRecorder.onstop = async () => {
-        stopVisualization();
-        await processAudio();
+      	stopVisualization();
+
+          // Create Blob without specifying type - use what the recorder actually produced
+          const audioBlob = new Blob(audioChunks);
+
+          // Include the actual MIME type in the request so your backend knows what format it received
+      	const response = await fetch("/api/audio/recognize", {
+              method: "POST",
+              body: audioBlob,
+              headers: {
+                  "Content-Type": audioBlob.type,
+      			Accept: "text/plain; charset=utf-8"
+              }
+          });
+          const resultText = await response.text();
+          transcriptionText.textContent = resultText || "(No se detectó habla)";
+          statusMessage.textContent = "Transcripción completada";
+          resultDiv.classList.remove("hidden");
       };
 
       mediaRecorder.start(100); // Collect data every 100ms
@@ -157,127 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   }
 
-  // Process recorded audio
-  async function processAudio() {
-    try {
-      const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
 
-      // Convert to 16kHz mono PCM for Vosk
-      const convertedAudio = await convertAudioForVosk(audioBlob);
-
-      // Send to Spring Boot backend
-      const response = await fetch("/api/audio/recognize", {
-        method: "POST",
-        body: convertedAudio,
-        headers: {
-          "Content-Type": "application/octet-stream",
-          Accept: "text/plain; charset=utf-8",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error del servidor: ${response.status}`);
-      }
-
-      const text = await response.text();
-      const decodedText = new TextDecoder("utf-8").decode(
-        new TextEncoder().encode(text)
-      );
-
-      // Display results
-      transcriptionText.textContent = decodedText || "(No se detectó habla)";
-      resultDiv.classList.remove("hidden");
-      statusMessage.textContent = "Transcripción completada";
-    } catch (error) {
-      console.error("Error en el reconocimiento:", error);
-      statusMessage.textContent = `Error: ${error.message}`;
-    }
-  }
-
-  // Convert audio to Vosk-compatible format (16kHz mono PCM)
-  async function convertAudioForVosk(blob) {
-    try {
-      const audioContext = new (window.AudioContext ||
-        window.webkitAudioContext)({ sampleRate: 16000 });
-      const arrayBuffer = await blob.arrayBuffer();
-      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
-      // Create offline context for processing
-      const offlineCtx = new OfflineAudioContext({
-        numberOfChannels: 1,
-        length: audioBuffer.length,
-        sampleRate: 16000,
-      });
-
-      // Create mono source
-      const source = offlineCtx.createBufferSource();
-      source.buffer = audioBuffer;
-
-      // Connect to destination (automatically mixes to mono)
-      source.connect(offlineCtx.destination);
-
-      // Render to new buffer
-      source.start();
-      const renderedBuffer = await offlineCtx.startRendering();
-
-      // Convert to WAV format
-      const wavBuffer = audioBufferToWav(renderedBuffer);
-      return new Blob([wavBuffer], { type: "audio/wav" });
-    } catch (error) {
-      console.error("Error converting audio:", error);
-      // Fallback to original blob if conversion fails
-      return blob;
-    }
-  }
-
-  // Helper function to convert AudioBuffer to WAV
-  function audioBufferToWav(buffer) {
-    const numChannels = buffer.numberOfChannels;
-    const sampleRate = buffer.sampleRate;
-    const length = buffer.length;
-
-    const interleaved = new Float32Array(length * numChannels);
-    for (let channel = 0; channel < numChannels; channel++) {
-      const channelData = buffer.getChannelData(channel);
-      for (let i = 0; i < length; i++) {
-        interleaved[i * numChannels + channel] = channelData[i];
-      }
-    }
-
-    const bufferBytes = new ArrayBuffer(44 + interleaved.length * 2);
-    const view = new DataView(bufferBytes);
-
-    // Write WAV header
-    writeString(view, 0, "RIFF");
-    view.setUint32(4, 36 + interleaved.length * 2, true);
-    writeString(view, 8, "WAVE");
-    writeString(view, 12, "fmt ");
-    view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true); // PCM format
-    view.setUint16(22, numChannels, true);
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, sampleRate * numChannels * 2, true);
-    view.setUint16(32, numChannels * 2, true);
-    view.setUint16(34, 16, true);
-    writeString(view, 36, "data");
-    view.setUint32(40, interleaved.length * 2, true);
-
-    // Write PCM samples
-    const volume = 1;
-    let index = 44;
-    for (let i = 0; i < interleaved.length; i++) {
-      view.setInt16(index, interleaved[i] * (0x7fff * volume), true);
-      index += 2;
-    }
-
-    return bufferBytes;
-  }
-
-  function writeString(view, offset, string) {
-    for (let i = 0; i < string.length; i++) {
-      view.setUint8(offset + i, string.charCodeAt(i));
-    }
-  }
 
   // Event listeners
   recordButton.addEventListener("click", function () {
