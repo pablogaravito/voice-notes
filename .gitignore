@@ -128,6 +128,9 @@ dist
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
+voice-notes-backend/models/
+voice-notes-backend/native-bin/
+
 # yarn v2
 .yarn/cache
 .yarn/unplugged
@@ -135,5 +138,4 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-voice-notes-backend/models/
-voice-notes-backend/native-bin/
+
