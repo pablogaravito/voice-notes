@@ -136,3 +136,4 @@ dist
 .pnp.*
 
 voice-notes-backend/models/
+voice-notes-backend/native-bin/
