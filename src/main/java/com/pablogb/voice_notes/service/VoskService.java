@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class VoskService {
@@ -31,8 +32,12 @@ public class VoskService {
 
             byte[] buffer = inputStream.readAllBytes();
             recognizer.acceptWaveForm(buffer, buffer.length);
-            String resultJson = recognizer.getResult();
-            JsonNode jsonNode = new ObjectMapper().readTree(resultJson);
+
+            String result = recognizer.getResult();
+            // Force UTF-8 conversion
+            String utf8Text = new String(result.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+
+            JsonNode jsonNode = new ObjectMapper().readTree(utf8Text);
             return jsonNode.get("text").asText();
         } catch (Exception e) {
             throw new RuntimeException("Vosk transcription failed", e);
