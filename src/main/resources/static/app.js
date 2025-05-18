@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const audioBlob = new Blob(audioChunks);
 
           // Include the actual MIME type in the request so your backend knows what format it received
-      	const response = await fetch("/api/audio/recognize", {
+      	const response = await fetch("/api/audio/transcribe", {
               method: "POST",
               body: audioBlob,
               headers: {

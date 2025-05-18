@@ -13,10 +13,6 @@ public class AudioConversionService {
     private final File workingDir = new File("tmp");
     private final File ffmpegExe = new File("native-bin/ffmpeg.exe");
 
-    public AudioConversionService() {
-
-    }
-
     public File convertToWav(File inputFile) throws IOException, InterruptedException {
         File outputFile = new File(workingDir, "converted.wav");
 

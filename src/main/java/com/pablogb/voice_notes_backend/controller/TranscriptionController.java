@@ -11,11 +11,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/transcribe")
-@RequiredArgsConstructor
+@RequestMapping("/api/audio")
+
 public class TranscriptionController {
 
-    private TranscriptionManager transcriptionManager;
+    private final TranscriptionManager transcriptionManager;
+
+    public TranscriptionController(TranscriptionManager transcriptionManager) {
+        this.transcriptionManager = transcriptionManager;
+    }
 
     //@PostMapping(produces = MediaType.TEXT_PLAIN_VALUE + ";charset=UTF-8")
 //    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -27,16 +31,31 @@ public class TranscriptionController {
 //                .body(transcript);
 //    }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> transcribe(@RequestParam("audio") MultipartFile audioFile) {
-        System.out.println("reached controller");
+    @PostMapping("/transcribe")
+    public ResponseEntity<String> transcribeAudio(
+            @RequestBody byte[] audioBytes,
+            @RequestParam(defaultValue = "VOSK") TranscriptionManager.Engine engine) {
         try {
-            String result = transcriptionManager.handle(audioFile);
+            String result = transcriptionManager.handle(audioBytes, engine);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error: " + e.getMessage());
+                    .body("Transcription failed: " + e.getMessage());
         }
     }
+
+
+
+//    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<String> transcribe(@RequestParam("audio") MultipartFile audioFile) {
+//        System.out.println("reached controller");
+//        try {
+//            String result = transcriptionManager.handle(audioFile);
+//            return ResponseEntity.ok(result);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("Error: " + e.getMessage());
+//        }
+//    }
 }
