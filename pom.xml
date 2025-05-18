@@ -11,7 +11,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>voice-notes</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>voice-notes-backend</name>
+	<name>voice-notes</name>
 	<description>Backend for Voice Notes Web App</description>
 	<url/>
 	<licenses>

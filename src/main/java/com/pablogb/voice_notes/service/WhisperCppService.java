@@ -1,4 +1,4 @@
-package com.pablogb.voice_notes_backend.service;
+package com.pablogb.voice_notes.service;
 
 import org.springframework.stereotype.Service;
 
@@ -11,10 +11,10 @@ public class WhisperCppService {
 
     private final File workingDir = new File("tmp");
     private final File whisperExe = new File("native-bin/whisper-cli.exe");
-    private final File modelFile = new File("models/ggml-small.bin");
+    private final File modelFile = new File("models/whisper-cpp-small/ggml-small.bin");
 
     public String transcribe(File wavFile) throws IOException, InterruptedException {
-        System.out.println("reached transcribe");
+        System.out.println("[whisperCppService] Starting service...");
         File outputTxtFile = new File(workingDir, wavFile.getName() + ".txt");
 
         ProcessBuilder pb = new ProcessBuilder(

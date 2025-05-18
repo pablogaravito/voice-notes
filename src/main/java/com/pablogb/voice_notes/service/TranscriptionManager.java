@@ -1,6 +1,5 @@
-package com.pablogb.voice_notes_backend.service;
+package com.pablogb.voice_notes.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -8,24 +7,22 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 @Service
-@RequiredArgsConstructor
 public class TranscriptionManager {
 
     private final AudioConversionService audioConversionService;
     private final WhisperCppService whisperCppService;
     private final VoskService voskService;
 
+    public TranscriptionManager(AudioConversionService audioConversionService, WhisperCppService whisperCppService, VoskService voskService) {
+        this.audioConversionService = audioConversionService;
+        this.whisperCppService = whisperCppService;
+        this.voskService = voskService;
+    }
+
     public enum Engine {WHISPER, VOSK, BOTH}
 
     private final File workingDir = new File("tmp");
 
-//    public TranscriptionManager(AudioConversionService audioConversionService,
-//                                WhisperCppService whisperCppService,
-//                                VoskService voskService) {
-//        this.audioConversionService = audioConversionService;
-//        this.whisperCppService = whisperCppService;
-//        this.voskService = voskService;
-//    }
 
     public String handle(byte[] inputAudio, Engine engine) throws IOException, InterruptedException {
         System.out.println("reached handle");

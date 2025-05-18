@@ -1,4 +1,4 @@
-package com.pablogb.voice_notes_backend.service;
+package com.pablogb.voice_notes.service;
 
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.pablogb.voice_notes_backend.controller;
+package com.pablogb.voice_notes.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

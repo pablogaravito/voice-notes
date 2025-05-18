@@ -1,4 +1,4 @@
-package com.pablogb.voice_notes_backend.service;
+package com.pablogb.voice_notes.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,16 +25,12 @@ public class VoskService {
     }
 
     public String transcribe(File wavFile) {
+        System.out.println("[voskService] Starting service...");
         try (InputStream inputStream = new FileInputStream(wavFile);
              Recognizer recognizer = new Recognizer(model, 16000.0f)) {
 
             byte[] buffer = inputStream.readAllBytes();
             recognizer.acceptWaveForm(buffer, buffer.length);
-
-            //String result = recognizer.getResult();
-            // Force UTF-8 conversion
-            //String utf8Text = new String(result.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-            //JsonNode jsonNode = new ObjectMapper().readTree(utf8Text);
             String resultJson = recognizer.getResult();
             JsonNode jsonNode = new ObjectMapper().readTree(resultJson);
             return jsonNode.get("text").asText();

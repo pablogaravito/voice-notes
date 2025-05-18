@@ -1,11 +1,11 @@
-package com.pablogb.voice_notes_backend;
+package com.pablogb.voice_notes;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class VoiceNotesBackendApplication {
+public class VoiceNotesApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(VoiceNotesBackendApplication.class, args);
+		SpringApplication.run(VoiceNotesApplication.class, args);
 	}
 }
