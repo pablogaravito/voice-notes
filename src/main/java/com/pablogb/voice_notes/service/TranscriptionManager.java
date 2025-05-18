@@ -5,6 +5,11 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class TranscriptionManager {
@@ -24,8 +29,51 @@ public class TranscriptionManager {
     private final File workingDir = new File("tmp");
 
 
-    public String handle(byte[] inputAudio, Engine engine) throws IOException, InterruptedException {
-        System.out.println("reached handle");
+    public Map<String, String> handleDualTranscription(byte[] inputAudio)
+            throws IOException, InterruptedException {
+        System.out.println("Starting dual transcription");
+
+        if (!workingDir.exists()) {
+            workingDir.mkdirs();
+        }
+
+        try {
+            File inputFile = new File(workingDir, "audio.tmp");
+            Files.write(inputFile.toPath(), inputAudio);
+            File wavFile = audioConversionService.convertToWav(inputFile);
+
+            CompletableFuture<String> whisperFuture = CompletableFuture.supplyAsync(() -> {
+                try {
+                    return whisperCppService.transcribe(wavFile);
+                } catch (Exception e) {
+                    throw new CompletionException(e);
+                }
+            });
+
+            CompletableFuture<String> voskFuture = CompletableFuture.supplyAsync(() -> {
+                try {
+                    return voskService.transcribe(wavFile);
+                } catch (Exception e) {
+                    throw new CompletionException(e);
+                }
+            });
+
+            CompletableFuture.allOf(whisperFuture, voskFuture).join();
+
+            Map<String, String> results = new HashMap<>();
+            results.put("whisper", whisperFuture.get().stripLeading());
+            results.put("vosk", voskFuture.get().stripLeading());
+            System.out.println(results);
+            return results;
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } finally {
+            cleanWorkingDir(workingDir);
+        }
+    }
+
+
+    public String handleSingleTranscription(byte[] inputAudio, Engine engine) throws IOException, InterruptedException {
         if (!workingDir.exists()) {
             workingDir.mkdirs(); // create tmp dir if it doesn't exist
         }
@@ -35,12 +83,11 @@ public class TranscriptionManager {
 
             File wavFile = audioConversionService.convertToWav(inputFile);
 
-            String result = switch (engine) {
+            String result = switch(engine) {
                 case WHISPER -> whisperCppService.transcribe(wavFile);
                 case VOSK -> voskService.transcribe(wavFile);
-                case BOTH -> voskService.transcribe(wavFile);
+                default -> throw new IllegalArgumentException("Unsupported engine");
             };
-            //String result = voskService.transcribe(wavFile);
 
             return result.stripLeading(); // Remove leading whitespace
         } finally {
@@ -58,5 +105,4 @@ public class TranscriptionManager {
             }
         }
     }
-
 }

@@ -63,6 +63,23 @@
             white-space: pre-wrap;
         }
 
+        .dual-results {
+            margin-top: 20px;
+        }
+
+        .dual-results .engine-result {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+        }
+
+        .dual-results .engine-result:last-child {
+            margin-bottom: 0;
+        }
+
         .status {
             text-align: center;
             margin: 10px 0;

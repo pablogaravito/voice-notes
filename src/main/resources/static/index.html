@@ -3,12 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transcriptor de sesiones by Pablis</title>
+    <title>Transcriptor de Audio by Pablis</title>
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
     <div class="container">
-        <h1>Transcriptor de sesiones by Pablis</h1>
+        <h1>Transcriptor de Audio by Pablis</h1>
+        <div class="engine-selector">
+            <label for="engineSelect">Modelo de Reconocimiento de Voz:</label>
+            <select id="engineSelect">
+                <option value="WHISPER">Whisper.cpp</option>
+                <option value="VOSK">Vosk</option>
+                <option value="BOTH">Ambos</option>
+            </select>
+        </div>
         
         <canvas id="audioVisualizer" width="800" height="100"></canvas>
         
@@ -17,10 +25,21 @@
         <div class="status" id="statusMessage">
             Presiona el botón para comenzar a grabar
         </div>
-        
-        <div id="result" class="hidden">
-            <h3>Transcripción:</h3>
+
+        <div class="hidden" id="singleResult">
+            <h3 id="singleModelName"></h3>
             <div id="transcriptionText"></div>
+        </div>
+
+        <div class="hidden dual-results" id="dualResults">
+            <div class="engine-result">
+                <h3>Whisper.cpp:</h3>
+                <div id="whisperText"></div>
+            </div>
+            <div class="engine-result">
+                <h3>Vosk:</h3>
+                <div id="voskText"></div>
+            </div>
         </div>
     </div>
     <script src="app.js"></script>

@@ -4,6 +4,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const resultDiv = document.getElementById("result");
   const transcriptionText = document.getElementById("transcriptionText");
   const audioVisualizer = document.getElementById("audioVisualizer");
+  const engineSelect = document.getElementById('engineSelect');
+  const singleResult = document.getElementById('singleResult');
+  const dualResults = document.getElementById('dualResults');
+  const singleModelName = document.getElementById('singleModelName');
 
   let mediaRecorder;
   let audioChunks = [];
@@ -93,20 +97,38 @@ document.addEventListener("DOMContentLoaded", function () {
           // Create Blob without specifying type - use what the recorder actually produced
           const audioBlob = new Blob(audioChunks);
 
+          const url = new URL('/api/audio/transcribe', window.location.origin);
+          url.search = new URLSearchParams({engine: engineSelect.value});
+
           // Include the actual MIME type in the request so your backend knows what format it received
-      	const response = await fetch("/api/audio/transcribe", {
+      	const response = await fetch(url, {
               method: "POST",
               body: audioBlob,
               headers: {
-                  "Content-Type": audioBlob.type,
-      			Accept: "text/plain; charset=utf-8"
-              }
+                      "Content-Type": audioBlob.type,
+                      Accept: "application/json" // We'll return JSON now
+                  }
           });
-          const resultText = await response.text();
-          transcriptionText.textContent = resultText || "(No se detectó habla)";
           statusMessage.textContent = "Transcripción completada";
-          resultDiv.classList.remove("hidden");
-      };
+//          const resultText = await response.text();
+//          transcriptionText.textContent = resultText || "(No se detectó habla)";
+//
+//          resultDiv.classList.remove("hidden");
+            if (engineSelect.value === "BOTH") {
+                // Parse JSON response for dual engines
+                const results = await response.json();
+                singleResult.classList.add('hidden');
+                dualResults.classList.remove('hidden');
+                document.getElementById('whisperText').textContent = results.whisper || "(No se detectó habla)";
+                document.getElementById('voskText').textContent = results.vosk || "(No se detectó habla)";
+            } else {
+                singleModelName.textContent = engineSelect.value === "VOSK" ? "VOSK:" : "WHISPER CPP:";
+                const resultText = await response.text();
+                singleResult.classList.remove('hidden');
+                dualResults.classList.add('hidden');
+                document.getElementById('transcriptionText').textContent = resultText || "(No se detectó habla)";
+            };
+        }
 
       mediaRecorder.start(100); // Collect data every 100ms
 
@@ -114,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
       recordButton.textContent = "Detener Grabación";
       recordButton.classList.add("recording");
       statusMessage.textContent = "Grabando... Habla ahora";
-      resultDiv.classList.add("hidden");
+      //resultDiv.classList.add("hidden");
     } catch (error) {
       console.error("Error al acceder al micrófono:", error);
       statusMessage.textContent = `Error: ${error.message}`;
