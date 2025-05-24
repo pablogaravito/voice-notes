@@ -91,8 +91,7 @@ public class TranscriptionManager {
 
             return result.stripLeading(); // Remove leading whitespace
         } finally {
-            //cleanWorkingDir(workingDir);
-            System.out.println("should clean here, but not yet");
+            cleanWorkingDir(workingDir);
         }
     }
 

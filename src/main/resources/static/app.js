@@ -121,14 +121,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 const results = await response.json();
                 singleResult.classList.add('hidden');
                 dualResults.classList.remove('hidden');
-                document.getElementById('whisperText').textContent = results.whisper || "(No se detectó habla)";
-                document.getElementById('voskText').textContent = results.vosk || "(No se detectó habla)";
+                document.getElementById('whisperText').value = results.whisper || "(No se detectó habla)";
+                document.getElementById('voskText').value = results.vosk || "(No se detectó habla)";
             } else {
                 singleModelName.textContent = engineSelect.value === "VOSK" ? "VOSK:" : "WHISPER CPP:";
                 const resultText = await response.text();
                 singleResult.classList.remove('hidden');
                 dualResults.classList.add('hidden');
-                document.getElementById('transcriptionText').textContent = resultText || "(No se detectó habla)";
+                document.getElementById('transcriptionText').value = resultText || "(No se detectó habla)";
             };
         }
 
@@ -229,14 +229,14 @@ document.addEventListener("DOMContentLoaded", function () {
                           const results = await response.json();
                           singleResult.classList.add('hidden');
                           dualResults.classList.remove('hidden');
-                          document.getElementById('whisperText').textContent = results.whisper || "(No se detectó habla)";
-                          document.getElementById('voskText').textContent = results.vosk || "(No se detectó habla)";
+                          document.getElementById('whisperText').value = results.whisper || "(No se detectó habla)";
+                          document.getElementById('voskText').value = results.vosk || "(No se detectó habla)";
                       } else {
                           singleModelName.textContent = engineSelect.value === "VOSK" ? "VOSK:" : "WHISPER CPP:";
                           const resultText = await response.text();
                           singleResult.classList.remove('hidden');
                           dualResults.classList.add('hidden');
-                          document.getElementById('transcriptionText').textContent = resultText || "(No se detectó habla)";
+                          document.getElementById('transcriptionText').value = resultText || "(No se detectó habla)";
                       };
 
     } catch (error) {
