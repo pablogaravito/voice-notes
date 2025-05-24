@@ -1,0 +1,10 @@
+ a ver esta es una prueba donde voy a hablar un poco más que de costumbre
+ mi intención es poder probar que también funciona el resultado de la
+ transcripción cuando la frase es más larga y cuando el archivo tal vez es un
+ poco más largo en realidad lo que quiero ver es si es que también funciona el
+ tema de marcar el tiempo de digamos de las palabras y de las frases que la
+ gente va usando también quisiera ver si es que esta cuestión va a poder agrupar
+ las palabras de manera adecuada las oraciones de manera adecuada
+ pero en fin eso ya lo veremos me parece que ya llevo un tiempo suficiente ya
+ creo que vamos a ir por el minuto y yo creo que eso ya basta para poder hacer
+ una prueba suficientemente adecuada así es

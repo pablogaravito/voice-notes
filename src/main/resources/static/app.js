@@ -8,6 +8,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const singleResult = document.getElementById('singleResult');
   const dualResults = document.getElementById('dualResults');
   const singleModelName = document.getElementById('singleModelName');
+  const uploadButton = document.getElementById('uploadButton');
+  const audioUpload = document.getElementById('audioUpload');
+  const fileInfo = document.getElementById('fileInfo');
 
   let mediaRecorder;
   let audioChunks = [];
@@ -98,22 +101,21 @@ document.addEventListener("DOMContentLoaded", function () {
           const audioBlob = new Blob(audioChunks);
 
           const url = new URL('/api/audio/transcribe', window.location.origin);
-          url.search = new URLSearchParams({engine: engineSelect.value});
+          url.search = new URLSearchParams({
+              engine: engineSelect.value,
+              timestamps: document.getElementById('showTimestamps').checked
+          });
 
-          // Include the actual MIME type in the request so your backend knows what format it received
       	const response = await fetch(url, {
               method: "POST",
               body: audioBlob,
               headers: {
                       "Content-Type": audioBlob.type,
-                      Accept: "application/json" // We'll return JSON now
+                      Accept: "application/json"
                   }
           });
           statusMessage.textContent = "Transcripción completada";
-//          const resultText = await response.text();
-//          transcriptionText.textContent = resultText || "(No se detectó habla)";
-//
-//          resultDiv.classList.remove("hidden");
+
             if (engineSelect.value === "BOTH") {
                 // Parse JSON response for dual engines
                 const results = await response.json();
@@ -157,6 +159,93 @@ document.addEventListener("DOMContentLoaded", function () {
       statusMessage.textContent = "Procesando audio...";
     }
   }
+
+  uploadButton.addEventListener('click', () => {
+      audioUpload.click();
+  });
+
+  audioUpload.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+          // Validate file type
+          const validTypes = [
+              'audio/mpeg',          // .mp3
+              'audio/ogg',           // .ogg
+              'audio/wav',           // .wav
+              'audio/flac',          // .flac
+              'audio/x-m4a',         // .m4a
+              'audio/aac',           // .aac
+              'audio/webm',          // .webm
+              'audio/aiff',          // .aiff
+              'audio/amr',           // .amr
+              'audio/x-ms-wma',      // .wma
+              'audio/mp4',           // .mp4 (audio)
+              'audio/x-aiff',        // alternative for aiff
+              'audio/x-wav'          // alternative for wav
+          ];
+
+//          if (!validTypes.includes(file.type)) {
+//              fileInfo.textContent = 'Formato no soportado.';
+//              return;
+//          }
+
+          fileInfo.textContent = `Archivo seleccionado: ${file.name}`;
+
+          // Here you would handle the file upload to your backend
+          handleAudioFile(file);
+      }
+  });
+
+  async function handleAudioFile(file) {
+      // Show loading state
+      statusMessage.textContent = 'Procesando archivo de audio...';
+
+      try {
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const url = new URL('/api/audio/transcribe-file', window.location.origin);
+          url.search = new URLSearchParams({
+                        engine: engineSelect.value,
+                        timestamps: document.getElementById('showTimestamps').checked
+          });
+
+          const response = await fetch(url, {
+              method: 'POST',
+              body: formData,
+              headers: {
+                  'Accept': 'application/json'
+              }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Server responded with:', errorText);
+            throw new Error(`Server error: ${response.status} - ${errorText}`);
+          }
+
+          if (engineSelect.value === "BOTH") {
+                          // Parse JSON response for dual engines
+                          const results = await response.json();
+                          singleResult.classList.add('hidden');
+                          dualResults.classList.remove('hidden');
+                          document.getElementById('whisperText').textContent = results.whisper || "(No se detectó habla)";
+                          document.getElementById('voskText').textContent = results.vosk || "(No se detectó habla)";
+                      } else {
+                          singleModelName.textContent = engineSelect.value === "VOSK" ? "VOSK:" : "WHISPER CPP:";
+                          const resultText = await response.text();
+                          singleResult.classList.remove('hidden');
+                          dualResults.classList.add('hidden');
+                          document.getElementById('transcriptionText').textContent = resultText || "(No se detectó habla)";
+                      };
+
+    } catch (error) {
+        console.error('Full error details:', error);
+        statusMessage.textContent = 'Error al procesar el archivo: ' +
+            (error.message || 'Error desconocido');
+    }
+  }
+
 
   // Stop visualization
   function stopVisualization() {

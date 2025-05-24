@@ -16,14 +16,22 @@
                 <option value="VOSK">Vosk</option>
                 <option value="BOTH">Ambos</option>
             </select>
+            <br>
+            <label>
+                <input type="checkbox" id="showTimestamps"> Show timestamps (Whisper only)
+            </label>
         </div>
         
         <canvas id="audioVisualizer" width="800" height="100"></canvas>
-        
-        <button id="recordButton">Comenzar Grabación</button>
-        
-        <div class="status" id="statusMessage">
-            Presiona el botón para comenzar a grabar
+
+        <div class="button-group">
+            <button id="recordButton">Comenzar Grabación</button>
+            <button id="uploadButton" class="upload-button">Subir Audio</button>
+            <input type="file" id="audioUpload" accept=".mp3,.ogg,.wav,.flac,.m4a,.aac,.webm,.aiff,.amr,.wma,.mp4,audio/*" style="display: none;">
+        </div>
+        <div class="file-info-container">
+            <div class="status" id="statusMessage">Presiona el botón para comenzar a grabar</div>
+            <span class="file-info" id="fileInfo">No se ha seleccionado ningún archivo</span>
         </div>
 
         <div class="hidden" id="singleResult">

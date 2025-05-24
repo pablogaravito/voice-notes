@@ -29,7 +29,7 @@ public class TranscriptionManager {
     private final File workingDir = new File("tmp");
 
 
-    public Map<String, String> handleDualTranscription(byte[] inputAudio)
+    public Map<String, String> handleDualTranscription(byte[] inputAudio, boolean timestamps)
             throws IOException, InterruptedException {
         System.out.println("Starting dual transcription");
 
@@ -44,7 +44,7 @@ public class TranscriptionManager {
 
             CompletableFuture<String> whisperFuture = CompletableFuture.supplyAsync(() -> {
                 try {
-                    return whisperCppService.transcribe(wavFile);
+                    return whisperCppService.transcribe(wavFile, timestamps);
                 } catch (Exception e) {
                     throw new CompletionException(e);
                 }
@@ -73,7 +73,7 @@ public class TranscriptionManager {
     }
 
 
-    public String handleSingleTranscription(byte[] inputAudio, Engine engine) throws IOException, InterruptedException {
+    public String handleSingleTranscription(byte[] inputAudio, Engine engine, boolean timestamps) throws IOException, InterruptedException {
         if (!workingDir.exists()) {
             workingDir.mkdirs(); // create tmp dir if it doesn't exist
         }
@@ -84,14 +84,15 @@ public class TranscriptionManager {
             File wavFile = audioConversionService.convertToWav(inputFile);
 
             String result = switch(engine) {
-                case WHISPER -> whisperCppService.transcribe(wavFile);
+                case WHISPER -> whisperCppService.transcribe(wavFile, timestamps);
                 case VOSK -> voskService.transcribe(wavFile);
                 default -> throw new IllegalArgumentException("Unsupported engine");
             };
 
             return result.stripLeading(); // Remove leading whitespace
         } finally {
-            cleanWorkingDir(workingDir);
+            //cleanWorkingDir(workingDir);
+            System.out.println("should clean here, but not yet");
         }
     }
 

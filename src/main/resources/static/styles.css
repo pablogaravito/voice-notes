@@ -28,7 +28,7 @@ h1 {
     font-size: 16px;
     border-radius: 5px;
     cursor: pointer;
-    display: block;
+    display: inline-block;
     margin: 0 auto;
     transition: all 0.3s;
 }
@@ -157,6 +157,85 @@ h1 {
 #whisperText, #voskText {
     line-height: 1.6;
     font-size: 1rem;
+}
+
+/* File upload styles */
+.file-upload-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* Base button styles - applied to BOTH buttons */
+#recordButton,
+.upload-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-width: 180px; /* Ensures same width */
+    text-align: center;
+}
+
+.upload-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 auto;
+    transition: all 0.3s;
+}
+
+.upload-button:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+
+.file-info {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+/* Make the record and upload buttons appear side by side */
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Button container styles */
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+
+
+/* File info text styling */
+.file-info-container {
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.file-info {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    font-style: italic;
+    display: block;
 }
 
 @media (max-width: 768px) {
