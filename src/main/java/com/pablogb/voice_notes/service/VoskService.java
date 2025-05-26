@@ -21,7 +21,8 @@ public class VoskService {
     @PostConstruct
     public void init() throws IOException {
         // Initialize model
-        String voskModelFile = "models/vosk-model-small-es-0.42";
+        //String voskModelFile = "models/vosk-models/vosk-model-small-es-0.42";
+        String voskModelFile = "models/vosk-models/vosk-model-es-0.42";
         model = new Model(voskModelFile);
     }
 

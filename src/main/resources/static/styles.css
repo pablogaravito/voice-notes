@@ -102,6 +102,7 @@ h1 {
 #transcriptionText {
     line-height: 1.6;
     font-size: 1rem;
+    width: 100%
 }
 
 #singleResult.hidden,
@@ -109,8 +110,15 @@ h1 {
     display: none;
 }
 
-#dualResults {
-    display: flex;gap: 20px;
+.download-btn-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px; /* Adjust as needed for spacing */
+}
+
+.both-result {
+    display: flex;gap: 15px;
 }
 
 .engine-result {

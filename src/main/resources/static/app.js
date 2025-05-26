@@ -11,6 +11,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const uploadButton = document.getElementById('uploadButton');
   const audioUpload = document.getElementById('audioUpload');
   const fileInfo = document.getElementById('fileInfo');
+  const downloadTextButton = document.getElementById('downloadText');
+  const downloadVoskTextButton = document.getElementById('downloadVoskText');
+  const downloadWhisperTextButton = document.getElementById('downloadWhisperText');
+  const downloadBothTextButton = document.getElementById('downloadBothText');
 
   let mediaRecorder;
   let audioChunks = [];
@@ -305,4 +309,73 @@ document.addEventListener("DOMContentLoaded", function () {
       stopRecording();
     }
   });
+
+    transcriptionText
+    downloadText
+
+    whisperText
+    downloadWhisperText
+
+    voskText
+    downloadVoskText
+
+    downloadBothText
+
+
+  downloadTextButton.addEventListener('click', () => {
+    downloadTextAsFile('transcriptionText', 'transcripción.txt');
+  });
+
+  downloadVoskTextButton.addEventListener('click', () => {
+    downloadTextAsFile('voskText', 'transcripción-vosk.txt');
+  });
+
+  downloadWhisperTextButton.addEventListener('click', () => {
+    downloadTextAsFile('whisperText', 'transcripción-whisper.txt');
+  });
+
+  downloadBothTextButton.addEventListener('click', () => {
+    downloadCombinedTextAsFile();
+  });
+
+
+  function downloadTextAsFile(textareaId, filename) {
+      const text = document.getElementById(textareaId).value;
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+
+      setTimeout(() => {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+      }, 100);
+  }
+
+  // Specific function for combined download
+  function downloadCombinedTextAsFile() {
+      const text1 = document.getElementById('whisperText').value;
+      const text2 = document.getElementById('voskText').value;
+
+      // Using template literals for clean multiline string
+      const combinedText = `TRANSCRIPCIÓN WHISPER:\n${text1}\n\nTRANSCRIPCIÓN VOSK:\n${text2}`;
+
+      const blob = new Blob([combinedText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ambas-transcripciones.txt';
+      document.body.appendChild(a);
+      a.click();
+
+      setTimeout(() => {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+      }, 100);
+  }
 });
