@@ -1,5 +1,8 @@
 package com.pablogb.voice_notes.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -8,13 +11,24 @@ import java.nio.file.Files;
 @Service
 public class WhisperCppService {
 
-    private final File workingDir = new File("tmp");
-    private final File whisperExe = new File("native-bin/whisper-cli.exe");
-    private final File modelFile = new File("models/whisper-models/whisper-cpp-small/ggml-small.bin");
-//    private final File modelFile = new File("models/whisper-models/whisper-cpp-tiny-q8/ggml-tiny-q8_0.bin");
+    private static final Logger logger = LoggerFactory.getLogger(WhisperCppService.class);
+
+    @Value("${whisper.model.path}")
+    private String modelPath;
+
+    private final File workingDir;
+    private final File whisperExe;
+    private final File modelFile;
+
+    public WhisperCppService(@Value("${whisper.model.path}") String modelPath) {
+        this.workingDir = new File("tmp");
+        this.whisperExe = new File("native-bin/whisper-cli.exe");
+        this.modelFile = new File(modelPath);
+    }
 
     public String transcribe(File wavFile, boolean timestamps) throws IOException, InterruptedException {
-        System.out.println("[whisperCppService] Starting service...");
+        logger.info("Starting transcription for file: {} (timestamps: {})",
+                wavFile.getAbsolutePath(), timestamps);
 
         File outputTxtFile = new File(workingDir, wavFile.getName() + ".txt");
         File outputTimestampsFile = new File(workingDir, wavFile.getName() + "-timestamps.txt");
@@ -36,7 +50,7 @@ public class WhisperCppService {
                  PrintWriter writer = new PrintWriter(new FileWriter(outputTimestampsFile))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    System.out.println("[whisper.cpp] " + line);
+                    logger.debug("[whisper.cpp] {}", line);
                     if (line.startsWith("[") && line.contains("-->")) {
                         writer.println(simplifyTimestamp(line));
                     }
@@ -46,22 +60,28 @@ public class WhisperCppService {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    System.out.println("[whisper.cpp] " + line);
+                    logger.debug("[whisper.cpp] {}", line);
                 }
             }
         }
 
         int exitCode = process.waitFor();
-        System.out.println("[whisper.cpp] Process exited with code: " + exitCode);
+        logger.debug("Whisper process exited with code: {}", exitCode);
 
-        if (timestamps) {
-            return Files.readString(outputTimestampsFile.toPath()).stripLeading();
-        } else {
-            return Files.readString(outputTxtFile.toPath()).stripLeading();
+        if (exitCode != 0) {
+            logger.error("Whisper transcription failed with exit code: {}", exitCode);
+            throw new IOException("Whisper process failed with exit code " + exitCode);
         }
+        return readResultFile(timestamps ? outputTimestampsFile : outputTxtFile);
     }
 
-    public static String simplifyTimestamp(String line) {
+    private String readResultFile(File resultFile) throws IOException {
+        String result = Files.readString(resultFile.toPath()).stripLeading();
+        logger.debug("Final transcription result: {}", result);
+        return result;
+    }
+
+    private static String simplifyTimestamp(String line) {
         // Extract the timestamp part
         int startIdx = line.indexOf('[');
         int endIdx = line.indexOf(']');

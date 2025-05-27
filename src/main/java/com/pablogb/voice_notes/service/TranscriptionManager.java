@@ -1,5 +1,7 @@
 package com.pablogb.voice_notes.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -17,6 +19,7 @@ public class TranscriptionManager {
     private final AudioConversionService audioConversionService;
     private final WhisperCppService whisperCppService;
     private final VoskService voskService;
+    private static final Logger logger = LoggerFactory.getLogger(TranscriptionManager.class);
 
     public TranscriptionManager(AudioConversionService audioConversionService, WhisperCppService whisperCppService, VoskService voskService) {
         this.audioConversionService = audioConversionService;
@@ -31,7 +34,7 @@ public class TranscriptionManager {
 
     public Map<String, String> handleDualTranscription(byte[] inputAudio, boolean timestamps)
             throws IOException, InterruptedException {
-        System.out.println("Starting dual transcription");
+        logger.info("Starting dual Transcription");
 
         if (!workingDir.exists()) {
             workingDir.mkdirs();
@@ -68,12 +71,14 @@ public class TranscriptionManager {
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         } finally {
+            logger.info("Dual Transcription completed");
             cleanWorkingDir(workingDir);
         }
     }
 
 
     public String handleSingleTranscription(byte[] inputAudio, Engine engine, boolean timestamps) throws IOException, InterruptedException {
+        logger.info("Starting Single Transcription");
         if (!workingDir.exists()) {
             workingDir.mkdirs(); // create tmp dir if it doesn't exist
         }
@@ -91,11 +96,13 @@ public class TranscriptionManager {
 
             return result.stripLeading(); // Remove leading whitespace
         } finally {
+            logger.info("Single Transcription completed");
             cleanWorkingDir(workingDir);
         }
     }
 
     private void cleanWorkingDir(File workingDir) {
+        logger.debug("Cleaning Temporary Dir");
         File[] files = workingDir.listFiles();
         if (files != null) {
             for (File file : files) {

@@ -27,8 +27,12 @@
         <div class="button-group">
             <button id="recordButton">Comenzar Grabación</button>
             <button id="uploadButton" class="upload-button">Subir Audio</button>
-            <input type="file" id="audioUpload" accept=".mp3,.ogg,.wav,.flac,.m4a,.aac,.webm,.aiff,.amr,.wma,.mp4,audio/*" style="display: none;">
+            <input type="file" id="audioUpload"
+                   accept=".mp3,.wav,.ogg,.flac,.aac,.m4a,.aiff,.amr,.wma,.opus,.mp4"
+                   style="display: none;">
         </div>
+
+
         <div class="file-info-container">
             <div class="status" id="statusMessage">Presiona el botón para comenzar a grabar</div>
             <span class="file-info" id="fileInfo">No se ha seleccionado ningún archivo</span>
