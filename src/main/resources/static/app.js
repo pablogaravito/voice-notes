@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const downloadVoskTextButton = document.getElementById('downloadVoskText');
   const downloadWhisperTextButton = document.getElementById('downloadWhisperText');
   const downloadBothTextButton = document.getElementById('downloadBothText');
+  const themeToggle = document.getElementById('themeToggle');
+  const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
   let mediaRecorder;
   let audioChunks = [];
@@ -380,4 +382,28 @@ document.addEventListener("DOMContentLoaded", function () {
           element.disabled = false;
       });
   }
+
+  const currentTheme = localStorage.getItem('theme') ||
+                       (prefersDarkScheme.matches ? 'dark' : 'light');
+
+  function setTheme(theme) {
+      if (theme === 'dark') {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          themeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
+          localStorage.setItem('theme', 'dark');
+      } else {
+          document.documentElement.removeAttribute('data-theme');
+          themeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+          localStorage.setItem('theme', 'light');
+      }
+  }
+
+    // Initialize theme
+    setTheme(currentTheme);
+
+    // Toggle theme on button click
+    themeToggle.addEventListener('click', () => {
+        const activeTheme = document.documentElement.getAttribute('data-theme');
+        setTheme(activeTheme === 'dark' ? 'light' : 'dark');
+    });
 });
