@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const singleModelName = document.getElementById('singleModelName');
   const uploadButton = document.getElementById('uploadButton');
   const audioUpload = document.getElementById('audioUpload');
-  const fileInfo = document.getElementById('fileInfo');
   const downloadTextButton = document.getElementById('downloadText');
   const downloadVoskTextButton = document.getElementById('downloadVoskText');
   const downloadWhisperTextButton = document.getElementById('downloadWhisperText');
@@ -118,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
                       Accept: "application/json"
                   }
           });
-          statusMessage.textContent = "Transcripción completada";
+          statusMessage.textContent = 'Transcripción completada... Graba tu voz o sube un archivo para transcribir.';
           hideLoading();
             if (engineSelect.value === "BOTH") {
                 // Parse JSON response for dual engines
@@ -193,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function () {
 //              return;
 //          }
 
-          fileInfo.textContent = `Archivo seleccionado: ${file.name}`;
+          //fileInfo.textContent = `Archivo seleccionado: ${file.name}`;
 
           // Here you would handle the file upload to your backend
           handleAudioFile(file);
@@ -228,6 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
               throw new Error(`Server error: ${response.status} - ${errorText}`);
           }
         hideLoading();
+        statusMessage.textContent = 'Transcripción completada... Graba tu voz o sube un archivo para transcribir.';
           if (engineSelect.value === "BOTH") {
           // Parse JSON response for dual engines
               const results = await response.json();

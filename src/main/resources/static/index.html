@@ -33,14 +33,13 @@
         </div>
 
 
-        <div class="file-info-container">
-            <div class="status" id="statusMessage">Presiona el botón para comenzar a grabar</div>
-            <span class="file-info" id="fileInfo">No se ha seleccionado ningún archivo</span>
+        <div class="status-container">
+            <div class="status" id="statusMessage">Graba tu voz o sube un archivo para transcribir</div>
         </div>
 
         <div class="hidden" id="singleResult">
             <h3 id="singleModelName"></h3>
-            <textarea id="transcriptionText" readonly rows="10"></textarea>
+            <textarea id="transcriptionText" rows="10"></textarea>
 
             <div class="download-btn-container">
                 <button id="downloadText">Descargar Transcripción</button>
@@ -51,12 +50,12 @@
             <div class="both-result">
                 <div class="engine-result">
                     <h3>Whisper.cpp:</h3>
-                    <textarea id="whisperText" readonly rows="10"></textarea>
+                    <textarea id="whisperText" rows="10"></textarea>
                     <button id="downloadWhisperText">Descargar Transcripción</button>
                 </div>
                 <div class="engine-result">
                     <h3>Vosk:</h3>
-                    <textarea id="voskText" readonly rows="10"></textarea>
+                    <textarea id="voskText" rows="10"></textarea>
                     <button id="downloadVoskText">Descargar Transcripción</button>
                 </div>
             </div>
