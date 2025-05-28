@@ -9,18 +9,28 @@
 <body>
     <div class="container">
         <h1>Transcriptor de Audio by Pablis</h1>
-        <div class="engine-selector">
-            <label for="engineSelect">Modelo de Reconocimiento de Voz:</label>
-            <select id="engineSelect">
-                <option value="WHISPER">Whisper.cpp</option>
-                <option value="VOSK">Vosk</option>
-                <option value="BOTH">Ambos</option>
-            </select>
-            <br>
-            <label>
-                <input type="checkbox" id="showTimestamps"> Mostrar timestamps (Solo para Whisper)
-            </label>
+
+
+        <div class="configuration">
+            <div class="configuration-options">
+                <div class="select-container">
+                    <label for="engineSelect">Modelo de Reconocimiento de Voz:</label>
+                    <select id="engineSelect">
+                        <option value="WHISPER">Whisper.cpp</option>
+                        <option value="VOSK">Vosk</option>
+                        <option value="BOTH">Ambos</option>
+                    </select>
+                </div>
+
+                <div class="checkbox-container">
+                    <label class="timestamp-label">
+                        <input type="checkbox" id="showTimestamps">
+                        <span>Generar timestamps (Solo para Whisper)</span>
+                    </label>
+                </div>
+            </div>
         </div>
+
         
         <canvas id="audioVisualizer" width="800" height="100"></canvas>
 
@@ -34,26 +44,30 @@
 
 
         <div class="status-container">
-            <div class="status" id="statusMessage">Graba tu voz o sube un archivo para transcribir</div>
+            <div class="status" id="generalInfo">Graba tu voz o sube un archivo de audio para transcribir</div>
+            <div class="status" id="statusMessage">Esperando acción del usuario...</div>
+
         </div>
 
         <div class="hidden" id="singleResult">
-            <h3 id="singleModelName"></h3>
-            <textarea id="transcriptionText" rows="10"></textarea>
+            <div class="transcription-result">
+                <h3 id="singleModelName"></h3>
+                <textarea id="transcriptionText" rows="10"></textarea>
 
-            <div class="download-btn-container">
-                <button id="downloadText">Descargar Transcripción</button>
+                <div class="download-btn-container">
+                    <button id="downloadText">Descargar Transcripción</button>
+                </div>
             </div>
         </div>
 
         <div class="hidden dual-results" id="dualResults">
             <div class="both-result">
-                <div class="engine-result">
+                <div class="transcription-result">
                     <h3>Whisper.cpp:</h3>
                     <textarea id="whisperText" rows="10"></textarea>
                     <button id="downloadWhisperText">Descargar Transcripción</button>
                 </div>
-                <div class="engine-result">
+                <div class="transcription-result">
                     <h3>Vosk:</h3>
                     <textarea id="voskText" rows="10"></textarea>
                     <button id="downloadVoskText">Descargar Transcripción</button>

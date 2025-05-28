@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
                       Accept: "application/json"
                   }
           });
-          statusMessage.textContent = 'Transcripción completada... Graba tu voz o sube un archivo para transcribir.';
+          statusMessage.textContent = 'Transcripción completada.';
           hideLoading();
             if (engineSelect.value === "BOTH") {
                 // Parse JSON response for dual engines
@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
               throw new Error(`Server error: ${response.status} - ${errorText}`);
           }
         hideLoading();
-        statusMessage.textContent = 'Transcripción completada... Graba tu voz o sube un archivo para transcribir.';
+        statusMessage.textContent = 'Transcripción completada.';
           if (engineSelect.value === "BOTH") {
           // Parse JSON response for dual engines
               const results = await response.json();
