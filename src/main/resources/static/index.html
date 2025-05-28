@@ -18,7 +18,7 @@
             </select>
             <br>
             <label>
-                <input type="checkbox" id="showTimestamps"> Show timestamps (Whisper only)
+                <input type="checkbox" id="showTimestamps"> Mostrar timestamps (Solo para Whisper)
             </label>
         </div>
         
@@ -63,6 +63,12 @@
             <div class="download-btn-container">
                 <button id="downloadBothText">Descargar Ambas</button>
             </div>
+        </div>
+    </div>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <img src="images/pikachu.gif" alt="Loading..." class="loading-gif">
+            <p>Procesando el audio... Por favor espera!</p>
         </div>
     </div>
     <script src="app.js"></script>

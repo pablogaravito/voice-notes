@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
           // Create Blob without specifying type - use what the recorder actually produced
           const audioBlob = new Blob(audioChunks);
-
+        showLoading();
           const url = new URL('/api/audio/transcribe', window.location.origin);
           url.search = new URLSearchParams({
               engine: engineSelect.value,
@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   }
           });
           statusMessage.textContent = "Transcripción completada";
-
+          hideLoading();
             if (engineSelect.value === "BOTH") {
                 // Parse JSON response for dual engines
                 const results = await response.json();
@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function handleAudioFile(file) {
       // Show loading state
       statusMessage.textContent = 'Procesando archivo de audio...';
-
+    showLoading();
       try {
           const formData = new FormData();
           formData.append('file', file);
@@ -223,25 +223,25 @@ document.addEventListener("DOMContentLoaded", function () {
           });
 
           if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Server responded with:', errorText);
-            throw new Error(`Server error: ${response.status} - ${errorText}`);
+              const errorText = await response.text();
+              console.error('Server responded with:', errorText);
+              throw new Error(`Server error: ${response.status} - ${errorText}`);
           }
-
+        hideLoading();
           if (engineSelect.value === "BOTH") {
-                          // Parse JSON response for dual engines
-                          const results = await response.json();
-                          singleResult.classList.add('hidden');
-                          dualResults.classList.remove('hidden');
-                          document.getElementById('whisperText').value = results.whisper || "(No se detectó habla)";
-                          document.getElementById('voskText').value = results.vosk || "(No se detectó habla)";
-                      } else {
-                          singleModelName.textContent = engineSelect.value === "VOSK" ? "VOSK:" : "WHISPER CPP:";
-                          const resultText = await response.text();
-                          singleResult.classList.remove('hidden');
-                          dualResults.classList.add('hidden');
-                          document.getElementById('transcriptionText').value = resultText || "(No se detectó habla)";
-                      };
+          // Parse JSON response for dual engines
+              const results = await response.json();
+              singleResult.classList.add('hidden');
+              dualResults.classList.remove('hidden');
+              document.getElementById('whisperText').value = results.whisper || "(No se detectó habla)";
+              document.getElementById('voskText').value = results.vosk || "(No se detectó habla)";
+          } else {
+              singleModelName.textContent = engineSelect.value === "VOSK" ? "VOSK:" : "WHISPER CPP:";
+              const resultText = await response.text();
+              singleResult.classList.remove('hidden');
+              dualResults.classList.add('hidden');
+              document.getElementById('transcriptionText').value = resultText || "(No se detectó habla)";
+          };
 
     } catch (error) {
         console.error('Full error details:', error);
@@ -249,7 +249,6 @@ document.addEventListener("DOMContentLoaded", function () {
             (error.message || 'Error desconocido');
     }
   }
-
 
   // Stop visualization
   function stopVisualization() {
@@ -288,8 +287,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   }
 
-
-
   // Event listeners
   recordButton.addEventListener("click", function () {
     if (mediaRecorder && mediaRecorder.state === "recording") {
@@ -309,18 +306,6 @@ document.addEventListener("DOMContentLoaded", function () {
       stopRecording();
     }
   });
-
-    transcriptionText
-    downloadText
-
-    whisperText
-    downloadWhisperText
-
-    voskText
-    downloadVoskText
-
-    downloadBothText
-
 
   downloadTextButton.addEventListener('click', () => {
     downloadTextAsFile('transcriptionText', 'transcripción.txt');
@@ -377,5 +362,22 @@ document.addEventListener("DOMContentLoaded", function () {
           document.body.removeChild(a);
           window.URL.revokeObjectURL(url);
       }, 100);
+  }
+
+  function showLoading() {
+      document.getElementById('loadingOverlay').style.display = 'flex';
+      // Disable all buttons and inputs
+      document.querySelectorAll('button, input, select').forEach(element => {
+          element.disabled = true;
+      });
+  }
+
+  // Function to hide loading overlay
+  function hideLoading() {
+      document.getElementById('loadingOverlay').style.display = 'none';
+      // Enable all buttons and inputs
+      document.querySelectorAll('button, input, select').forEach(element => {
+          element.disabled = false;
+      });
   }
 });
