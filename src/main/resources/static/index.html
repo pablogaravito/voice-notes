@@ -59,7 +59,10 @@
                 <textarea id="transcriptionText" rows="10"></textarea>
 
                 <div class="download-btn-container">
-                    <button id="downloadText">Descargar Transcripción</button>
+                    <button id="downloadText" class="download-btn main-download">
+                        <i class="fas fa-download"></i>
+                        <span>Descargar</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -69,18 +72,29 @@
                 <div class="transcription-result">
                     <h3>Whisper.cpp:</h3>
                     <textarea id="whisperText" rows="10"></textarea>
-                    <button id="downloadWhisperText">Descargar Transcripción</button>
+                    <button id="downloadWhisperText" class="download-btn">
+                        <i class="fas fa-download"></i>
+                        <span>Descargar</span>
+                    </button>
                 </div>
                 <div class="transcription-result">
                     <h3>Vosk:</h3>
                     <textarea id="voskText" rows="10"></textarea>
-                    <button id="downloadVoskText">Descargar Transcripción</button>
+                    <button id="downloadVoskText" class="download-btn">
+                        <i class="fas fa-download"></i>
+                        <span>Descargar</span>
+                    </button>
                 </div>
             </div>
             <div class="download-btn-container">
-                <button id="downloadBothText">Descargar Ambas</button>
+                <button id="downloadBothText" class="download-btn main-download">
+                    <i class="fas fa-download"></i>
+                    <span>Descargar Ambas</span>
+                </button>
             </div>
         </div>
+
+
     </div>
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-content">
