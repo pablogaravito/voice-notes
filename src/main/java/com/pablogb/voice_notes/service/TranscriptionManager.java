@@ -66,7 +66,6 @@ public class TranscriptionManager {
             Map<String, String> results = new HashMap<>();
             results.put("whisper", whisperFuture.get().stripLeading());
             results.put("vosk", voskFuture.get().stripLeading());
-            System.out.println(results);
             return results;
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
@@ -93,7 +92,6 @@ public class TranscriptionManager {
                 case VOSK -> voskService.transcribe(wavFile);
                 default -> throw new IllegalArgumentException("Unsupported engine");
             };
-
             return result.stripLeading(); // Remove leading whitespace
         } finally {
             logger.info("Single Transcription completed");

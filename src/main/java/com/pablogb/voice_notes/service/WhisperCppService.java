@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class WhisperCppService {
@@ -72,7 +75,8 @@ public class WhisperCppService {
             logger.error("Whisper transcription failed with exit code: {}", exitCode);
             throw new IOException("Whisper process failed with exit code " + exitCode);
         }
-        return readResultFile(timestamps ? outputTimestampsFile : outputTxtFile);
+//        return readResultFile(timestamps ? outputTimestampsFile : outputTxtFile);
+        return timestamps ? readResultFile(outputTimestampsFile) : cleanSRTToNaturalText(outputTxtFile.toPath());
     }
 
     private String readResultFile(File resultFile) throws IOException {
@@ -112,11 +116,45 @@ public class WhisperCppService {
             // Format as HH:MM:SS when hours exist
             return String.format("%02d:%02d:%02d", hours, minutes, seconds);
         } else {
-            // Format as MM:SS for under one hour
+            // Format as MM:SS when under one hour
             return String.format("%02d:%02d", minutes, seconds);
         }
     }
 
+    private static String cleanSRTToNaturalText(Path srtFilePath) throws IOException {
+        List<String> lines = Files.readAllLines(srtFilePath);
+        StringBuilder output = new StringBuilder();
+        StringBuilder currentSentence = new StringBuilder();
+
+        Pattern timestampPattern = Pattern.compile("^\\d{2}:\\d{2}:\\d{2},\\d{3} --> .*");
+        Pattern indexPattern = Pattern.compile("^\\d+$");
+
+        for (String line : lines) {
+            line = line.trim();
+
+            // Skip index lines and timestamps
+            if (line.isEmpty() || indexPattern.matcher(line).matches() || timestampPattern.matcher(line).matches()) {
+                continue;
+            }
+
+            // Accumulate sentence parts
+            currentSentence.append(line).append(" ");
+
+            // Check for sentence-ending punctuation
+            if (line.matches(".*[.?!…]$")) {
+                output.append(currentSentence.toString().trim()).append(" ");
+                currentSentence.setLength(0);
+            }
+        }
+
+        // In case any leftover fragment
+        if (!currentSentence.isEmpty()) {
+            output.append(currentSentence.toString().trim());
+        }
+
+        // collapse multiple spaces, trim ends
+        return output.toString().replaceAll(" +", " ").trim();
+    }
 }
 
 
