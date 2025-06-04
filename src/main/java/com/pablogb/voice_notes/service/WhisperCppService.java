@@ -33,7 +33,7 @@ public class WhisperCppService {
         logger.info("Starting transcription for file: {} (timestamps: {})",
                 wavFile.getAbsolutePath(), timestamps);
 
-        File outputTxtFile = new File(workingDir, wavFile.getName() + ".txt");
+        File outputTxtFile = new File(workingDir, wavFile.getName() + ".srt");
         File outputTimestampsFile = new File(workingDir, wavFile.getName() + "-timestamps.txt");
 
         ProcessBuilder pb = new ProcessBuilder(
@@ -41,7 +41,7 @@ public class WhisperCppService {
                 "-m", modelFile.getAbsolutePath(),
                 "-f", wavFile.getAbsolutePath(),
                 "-l", "es",
-                "-otxt",
+                "-osrt",
                 "-pp"
         );
         pb.directory(workingDir);
@@ -75,6 +75,7 @@ public class WhisperCppService {
             logger.error("Whisper transcription failed with exit code: {}", exitCode);
             throw new IOException("Whisper process failed with exit code " + exitCode);
         }
+        logger.info("Transcription completed successfully for file: {}", wavFile.getAbsolutePath());
 //        return readResultFile(timestamps ? outputTimestampsFile : outputTxtFile);
         return timestamps ? readResultFile(outputTimestampsFile) : cleanSRTToNaturalText(outputTxtFile.toPath());
     }

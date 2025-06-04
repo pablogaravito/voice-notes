@@ -126,14 +126,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 const results = await response.json();
                 singleResult.classList.add('hidden');
                 dualResults.classList.remove('hidden');
-                document.getElementById('whisperText').value = results.whisper || "(No se detectó habla)";
-                document.getElementById('voskText').value = results.vosk || "(No se detectó habla)";
+                document.getElementById('whisperText').innerText = results.whisper || "(No se detectó habla)";
+                document.getElementById('voskText').innerText = results.vosk || "(No se detectó habla)";
             } else {
                 singleModelName.textContent = engineSelect.value === "VOSK" ? "VOSK:" : "WHISPER CPP:";
                 const resultText = await response.text();
                 singleResult.classList.remove('hidden');
                 dualResults.classList.add('hidden');
-                document.getElementById('transcriptionText').value = resultText || "(No se detectó habla)";
+                document.getElementById('transcriptionText').innerText = resultText || "(No se detectó habla)";
             };
         }
 
@@ -235,14 +235,14 @@ document.addEventListener("DOMContentLoaded", function () {
               const results = await response.json();
               singleResult.classList.add('hidden');
               dualResults.classList.remove('hidden');
-              document.getElementById('whisperText').value = results.whisper || "(No se detectó habla)";
-              document.getElementById('voskText').value = results.vosk || "(No se detectó habla)";
+              document.getElementById('whisperText').innerText = results.whisper || "(No se detectó habla)";
+              document.getElementById('voskText').innerText = results.vosk || "(No se detectó habla)";
           } else {
               singleModelName.textContent = engineSelect.value === "VOSK" ? "VOSK:" : "WHISPER CPP:";
               const resultText = await response.text();
               singleResult.classList.remove('hidden');
               dualResults.classList.add('hidden');
-              document.getElementById('transcriptionText').value = resultText || "(No se detectó habla)";
+              document.getElementById('transcriptionText').innerText = resultText || "(No se detectó habla)";
           };
 
     } catch (error) {
@@ -327,7 +327,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   function downloadTextAsFile(textareaId, filename) {
-      const text = document.getElementById(textareaId).value;
+      const text = document.getElementById(textareaId).innerText;
       const blob = new Blob([text], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
 
@@ -345,8 +345,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Specific function for combined download
   function downloadCombinedTextAsFile() {
-      const text1 = document.getElementById('whisperText').value;
-      const text2 = document.getElementById('voskText').value;
+      const text1 = document.getElementById('whisperText').innerText;
+      const text2 = document.getElementById('voskText').innerText;
 
       // Using template literals for clean multiline string
       const combinedText = `TRANSCRIPCIÓN WHISPER:\n${text1}\n\nTRANSCRIPCIÓN VOSK:\n${text2}`;

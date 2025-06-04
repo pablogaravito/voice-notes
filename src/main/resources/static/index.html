@@ -56,8 +56,8 @@
         <div class="hidden" id="singleResult">
             <div class="transcription-result">
                 <h3 id="singleModelName"></h3>
-                <textarea id="transcriptionText" rows="10"></textarea>
-
+<!--                <textarea id="transcriptionText" rows="10"></textarea>-->
+                <div id="transcriptionText" class="textAreas" contenteditable="true"></div>
                 <div class="download-btn-container">
                     <button id="downloadText" class="download-btn main-download">
                         <i class="fas fa-download"></i>
@@ -71,7 +71,8 @@
             <div class="both-result">
                 <div class="transcription-result">
                     <h3>Whisper.cpp:</h3>
-                    <textarea id="whisperText" rows="10"></textarea>
+<!--                    <textarea id="whisperText" rows="10"></textarea>-->
+                    <div id="whisperText" class="textAreas" contenteditable="true"></div>
                     <button id="downloadWhisperText" class="download-btn">
                         <i class="fas fa-download"></i>
                         <span>Descargar</span>
@@ -79,7 +80,8 @@
                 </div>
                 <div class="transcription-result">
                     <h3>Vosk:</h3>
-                    <textarea id="voskText" rows="10"></textarea>
+<!--                    <textarea id="voskText" rows="10"></textarea>-->
+                    <div id="voskText" class="textAreas" contenteditable="true"></div>
                     <button id="downloadVoskText" class="download-btn">
                         <i class="fas fa-download"></i>
                         <span>Descargar</span>
