@@ -17,6 +17,30 @@ document.addEventListener("DOMContentLoaded", function () {
   const themeToggle = document.getElementById('themeToggle');
   const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
+  const DARK_ICON = `
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+      </svg>
+  `;
+
+  const LIGHT_ICON = `
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+      </svg>
+  `;
+
+  const RECORD_ICON = `
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
+      </svg>
+  `;
+
+  const STOP_RECORD_ICON = `
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
+      </svg>
+  `;
+
   let mediaRecorder;
   let audioChunks = [];
   let audioContext;
@@ -141,6 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Update UI
       recordButton.textContent = "Detener Grabación";
+      recordButton.textContent = "Detener Grabación";
       recordButton.classList.add("recording");
       statusMessage.textContent = "Grabando... Habla ahora";
       //resultDiv.classList.add("hidden");
@@ -159,6 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
       mediaRecorder.stream.getTracks().forEach((track) => track.stop());
 
       // Update UI
+      recordButton.textContent = "Comenzar Grabación";
       recordButton.textContent = "Comenzar Grabación";
       recordButton.classList.remove("recording");
       statusMessage.textContent = "Procesando audio...";
@@ -389,13 +415,20 @@ document.addEventListener("DOMContentLoaded", function () {
   function setTheme(theme) {
       if (theme === 'dark') {
           document.documentElement.setAttribute('data-theme', 'dark');
-          themeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
+//          themeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
+          themeToggle.innerHTML = `${LIGHT_ICON} Light Mode`;
           localStorage.setItem('theme', 'dark');
       } else {
           document.documentElement.removeAttribute('data-theme');
-          themeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+//          themeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+          themeToggle.innerHTML = `${DARK_ICON} Dark Mode`;
           localStorage.setItem('theme', 'light');
       }
+  }
+
+  function hideResults() {
+    dualResults.classlist.add('hidden');
+    singleResult.classlist.add('hidden');
   }
 
     // Initialize theme

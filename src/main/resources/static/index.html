@@ -4,17 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transcriptor de Audio by Pablis</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
     <div class="container">
         <button class="theme-toggle" id="themeToggle">
-            <i class="fas fa-moon"></i>
-            <span>Dark Mode</span>
         </button>
         <h1>Transcriptor de Audio by Pablis</h1>
-
 
         <div class="configuration">
             <div class="configuration-options">
@@ -40,8 +36,18 @@
         <canvas id="audioVisualizer" width="800" height="100"></canvas>
 
         <div class="button-group">
-            <button id="recordButton">Comenzar Grabación</button>
-            <button id="uploadButton" class="upload-button">Subir Audio</button>
+            <button class="main-btn" id="recordButton">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
+                </svg>
+                Comenzar Grabación
+            </button>
+            <button class="main-btn" id="uploadButton">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15m0-3-3-3m0 0-3 3m3-3V15" />
+                </svg>
+                Subir Audio
+            </button>
             <input type="file" id="audioUpload"
                    accept=".mp3,.wav,.ogg,.flac,.aac,.m4a,.aiff,.amr,.wma,.opus,.mp4"
                    style="display: none;">
@@ -60,8 +66,10 @@
                 <div id="transcriptionText" class="textAreas" contenteditable="true"></div>
                 <div class="download-btn-container">
                     <button id="downloadText" class="download-btn main-download">
-                        <i class="fas fa-download"></i>
-                        <span>Descargar</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15M9 12l3 3m0 0 3-3m-3 3V2.25" />
+                        </svg>
+                        Descargar
                     </button>
                 </div>
             </div>
@@ -74,24 +82,30 @@
 <!--                    <textarea id="whisperText" rows="10"></textarea>-->
                     <div id="whisperText" class="textAreas" contenteditable="true"></div>
                     <button id="downloadWhisperText" class="download-btn">
-                        <i class="fas fa-download"></i>
-                        <span>Descargar</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15M9 12l3 3m0 0 3-3m-3 3V2.25" />
+                        </svg>
+                        Descargar
                     </button>
                 </div>
                 <div class="transcription-result">
                     <h3>Vosk:</h3>
 <!--                    <textarea id="voskText" rows="10"></textarea>-->
                     <div id="voskText" class="textAreas" contenteditable="true"></div>
-                    <button id="downloadVoskText" class="download-btn">
-                        <i class="fas fa-download"></i>
-                        <span>Descargar</span>
+                    <button id="downloadVoskText" class="g>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15M9 12l3 3m0 0 3-3m-3 3V2.25" />
+                        </svg>
+                        Descargar
                     </button>
                 </div>
             </div>
             <div class="download-btn-container">
                 <button id="downloadBothText" class="download-btn main-download">
-                    <i class="fas fa-download"></i>
-                    <span>Descargar Ambas</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 7.5h-.75A2.25 2.25 0 0 0 4.5 9.75v7.5a2.25 2.25 0 0 0 2.25 2.25h7.5a2.25 2.25 0 0 0 2.25-2.25v-7.5a2.25 2.25 0 0 0-2.25-2.25h-.75m-6 3.75 3 3m0 0 3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 0 1 2.25 2.25v7.5a2.25 2.25 0 0 1-2.25 2.25h-7.5a2.25 2.25 0 0 1-2.25-2.25v-.75" />
+                    </svg>
+                    Descargar Ambas
                 </button>
             </div>
         </div>

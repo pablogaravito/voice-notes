@@ -63,23 +63,39 @@ h1 {
     box-shadow: 0 2px 10px var(--shadow-color);
 }
 
-#recordButton {
-    background-color: var(--button-bg);
-    color: var(--button-text);
+.main-btn {
+    /* Color and appearance */
+    background-color: var(--button-bg, #e74c3c); /* Fallback to #e74c3c if variable not defined */
     color: white;
     border: none;
-    padding: 12px 25px;
-    font-size: 16px;
     border-radius: 5px;
-    cursor: pointer;
-    display: inline-block;
+
+    /* Layout */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem; /* space between icon and text */
+    padding: 0.5rem 1rem;
+    min-width: 180px; /* Ensures same width */
     margin: 0 auto;
+
+    /* Text */
+    font-size: 1rem; /* ~16px, using relative units */
+    text-align: center;
+
+    /* Interaction */
+    cursor: pointer;
     transition: all 0.3s;
 }
 
-#recordButton:hover {
+.main-btn:hover {
     background-color: var(--button-hover);
     transform: scale(1.05);
+}
+
+.main-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
 #recordButton.recording {
@@ -162,21 +178,6 @@ h1 {
     margin: 20px 0;
 }
 
-/* Base button styles - applied to BOTH buttons */
-#recordButton,
-.upload-button {
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 11px 22px;
-    font-size: 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s;
-    min-width: 180px; /* Ensures same width */
-    text-align: center;
-}
-
 .download-btn {
     background-color: #3498db;
     color: white;
@@ -195,13 +196,12 @@ h1 {
     font-size: 15px;
 }
 
-.upload-button {
+#uploadButton {
     background-color: #3498db;
-    display: inline-block;
     margin: 0 auto;
 }
 
-.upload-button:hover {
+#uploadButton:hover {
     background-color: #2980b9;
     transform: scale(1.05);
 }
@@ -261,18 +261,18 @@ h1 {
 /* Theme toggle with icons */
 .theme-toggle {
     position: fixed;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem; /* space between icon and text */
+    padding: 0.5rem 1rem;
+    cursor: pointer;
     top: 20px;
     right: 20px;
     background: var(--container-bg);
     color: var(--text-color);
     border: 1px solid var(--border-color);
-    padding: 8px 12px;
     border-radius: 5px;
-    cursor: pointer;
     z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 8px;
     transition: all 0.3s;
 }
 
@@ -281,8 +281,14 @@ h1 {
     color: white;
 }
 
-.theme-toggle i {
-    font-size: 16px;
+.theme-toggle svg {
+  width: 1.25rem; /* Adjust this value to your preferred size */
+  height: 1.25rem;
+}
+
+/* Style the text */
+.theme-toggle-text {
+  font-size: 1rem; /* Match your site's text size */
 }
 
 /* Loading overlay adjustments for dark mode */
