@@ -164,8 +164,8 @@ document.addEventListener("DOMContentLoaded", function () {
       mediaRecorder.start(100); // Collect data every 100ms
 
       // Update UI
-      recordButton.textContent = "Detener Grabación";
-      recordButton.textContent = "Detener Grabación";
+      hideResults();
+      recordButton.innerHTML = `${STOP_RECORD_ICON} Detener Grabación`;
       recordButton.classList.add("recording");
       statusMessage.textContent = "Grabando... Habla ahora";
       //resultDiv.classList.add("hidden");
@@ -184,8 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
       mediaRecorder.stream.getTracks().forEach((track) => track.stop());
 
       // Update UI
-      recordButton.textContent = "Comenzar Grabación";
-      recordButton.textContent = "Comenzar Grabación";
+      recordButton.innerHTML = `${RECORD_ICON} Comenzar Grabación`;
       recordButton.classList.remove("recording");
       statusMessage.textContent = "Procesando audio...";
     }
@@ -223,6 +222,7 @@ document.addEventListener("DOMContentLoaded", function () {
           //fileInfo.textContent = `Archivo seleccionado: ${file.name}`;
 
           // Here you would handle the file upload to your backend
+          hideResults();
           handleAudioFile(file);
       }
   });
@@ -230,6 +230,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function handleAudioFile(file) {
       // Show loading state
       statusMessage.textContent = 'Procesando archivo de audio...';
+
     showLoading();
       try {
           const formData = new FormData();
@@ -369,7 +370,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }, 100);
   }
 
-  // Specific function for combined download
   function downloadCombinedTextAsFile() {
       const text1 = document.getElementById('whisperText').innerText;
       const text2 = document.getElementById('voskText').innerText;
@@ -415,20 +415,18 @@ document.addEventListener("DOMContentLoaded", function () {
   function setTheme(theme) {
       if (theme === 'dark') {
           document.documentElement.setAttribute('data-theme', 'dark');
-//          themeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
           themeToggle.innerHTML = `${LIGHT_ICON} Light Mode`;
           localStorage.setItem('theme', 'dark');
       } else {
           document.documentElement.removeAttribute('data-theme');
-//          themeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
           themeToggle.innerHTML = `${DARK_ICON} Dark Mode`;
           localStorage.setItem('theme', 'light');
       }
   }
 
   function hideResults() {
-    dualResults.classlist.add('hidden');
-    singleResult.classlist.add('hidden');
+    dualResults.classList.add('hidden');
+    singleResult.classList.add('hidden');
   }
 
     // Initialize theme

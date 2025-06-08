@@ -178,22 +178,6 @@ h1 {
     margin: 20px 0;
 }
 
-.download-btn {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 15px;
-    font-size: 14px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s;
-    min-width: 120px; /* Ensures same width */
-    text-align: center;
-}
-
 .download-btn svg {
     width: 1.25rem;
     height: 1.25rem;
@@ -370,18 +354,15 @@ h1 {
     background-color: #3498db;
     color: white;
     border: none;
-	border-radius: 5px;
+	border-radius: 6px;
     /* Layout */
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem; /* space between icon and text */
-    padding: 0.5rem 1rem;
-    min-width: 180px; /* Ensures same width */
-    margin: 0 auto;
+    padding: 0.5rem;
 
     /* Text */
-    font-size: 1rem; /* ~16px, using relative units */
+    font-size: 1.2rem; /* ~16px, using relative units */
     text-align: center;
 
     /* Interaction */
@@ -390,13 +371,14 @@ h1 {
 }
 
 .main-download {
-    padding: 0.6rem 1.2rem;
+    font-size: 1.5rem;
 }
 
 /* Download both button container */
 .download-btn-container {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
+    text-align: right;
     margin-top: 1.1rem;
 }
 
