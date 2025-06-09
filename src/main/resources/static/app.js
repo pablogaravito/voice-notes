@@ -128,7 +128,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
           // Create Blob without specifying type - use what the recorder actually produced
           const audioBlob = new Blob(audioChunks);
-        showLoading();
+          disableInputs();
+          showLoading();
           const url = new URL('/api/audio/transcribe', window.location.origin);
           url.search = new URLSearchParams({
               engine: engineSelect.value,
@@ -144,6 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   }
           });
           statusMessage.textContent = 'Transcripción completada.';
+          enableInputs();
           hideLoading();
             if (engineSelect.value === "BOTH") {
                 // Parse JSON response for dual engines
@@ -231,7 +233,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function handleAudioFile(file) {
       // Show loading state
       statusMessage.textContent = 'Procesando archivo de audio...';
-
+    disableInputs();
     showLoading();
       try {
           const formData = new FormData();
@@ -256,6 +258,7 @@ document.addEventListener("DOMContentLoaded", function () {
               console.error('Server responded with:', errorText);
               throw new Error(`Server error: ${response.status} - ${errorText}`);
           }
+          enableInputs();
         hideLoading();
         statusMessage.textContent = 'Transcripción completada.';
           if (engineSelect.value === "BOTH") {
@@ -397,15 +400,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function showLoading() {
       document.getElementById('loadingOverlay').style.display = 'flex';
-      // Disable all buttons and inputs
-      disableInputs();
   }
 
   // Function to hide loading overlay
   function hideLoading() {
       document.getElementById('loadingOverlay').style.display = 'none';
-      // Enable all buttons and inputs
-      enableInputs();
   }
 
   const currentTheme = localStorage.getItem('theme') ||
