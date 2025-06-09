@@ -168,7 +168,6 @@ document.addEventListener("DOMContentLoaded", function () {
       recordButton.innerHTML = `${STOP_RECORD_ICON} Detener Grabación`;
       recordButton.classList.add("recording");
       statusMessage.textContent = "Grabando... Habla ahora";
-      //resultDiv.classList.add("hidden");
     } catch (error) {
       console.error("Error al acceder al micrófono:", error);
       statusMessage.textContent = `Error: ${error.message}`;
@@ -223,7 +222,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
           // Here you would handle the file upload to your backend
           hideResults();
+          disableInputs();
           handleAudioFile(file);
+          enableInputs();
       }
   });
 
@@ -319,9 +320,12 @@ document.addEventListener("DOMContentLoaded", function () {
   // Event listeners
   recordButton.addEventListener("click", function () {
     if (mediaRecorder && mediaRecorder.state === "recording") {
+      enableInputs();
       stopRecording();
     } else {
       startRecording();
+      disableInputs();
+      recordButton.disabled = false;
     }
   });
 
@@ -351,7 +355,6 @@ document.addEventListener("DOMContentLoaded", function () {
   downloadBothTextButton.addEventListener('click', () => {
     downloadCombinedTextAsFile();
   });
-
 
   function downloadTextAsFile(textareaId, filename) {
       const text = document.getElementById(textareaId).innerText;
@@ -395,18 +398,14 @@ document.addEventListener("DOMContentLoaded", function () {
   function showLoading() {
       document.getElementById('loadingOverlay').style.display = 'flex';
       // Disable all buttons and inputs
-      document.querySelectorAll('button, input, select').forEach(element => {
-          element.disabled = true;
-      });
+      disableInputs();
   }
 
   // Function to hide loading overlay
   function hideLoading() {
       document.getElementById('loadingOverlay').style.display = 'none';
       // Enable all buttons and inputs
-      document.querySelectorAll('button, input, select').forEach(element => {
-          element.disabled = false;
-      });
+      enableInputs();
   }
 
   const currentTheme = localStorage.getItem('theme') ||
@@ -427,6 +426,19 @@ document.addEventListener("DOMContentLoaded", function () {
   function hideResults() {
     dualResults.classList.add('hidden');
     singleResult.classList.add('hidden');
+  }
+
+  function disableInputs() {
+    document.querySelectorAll('button, input, select').forEach(element => {
+        element.disabled = true;
+    });
+    themeToggle.disabled = false;
+  }
+
+  function enableInputs() {
+    document.querySelectorAll('button, input, select').forEach(element => {
+        element.disabled = false;
+    });
   }
 
     // Initialize theme
