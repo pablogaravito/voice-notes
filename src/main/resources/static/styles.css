@@ -352,7 +352,7 @@ h1 {
     align-items: center;
 }
 
-.download-btn, .copy-btn {
+.download-btn, .copy-btn, .both-download-btn {
     background-color: var(--action-btn);
     color: white;
     border: none;
@@ -372,12 +372,16 @@ h1 {
     transition: all 0.3s;
 }
 
-.download-btn:hover, .copy-btn:hover {
-    transform: scale(1.05);
+.both-download-btn {
+    margin-top: 0.8rem;
+    width: 3rem;
+    height: 3rem;
+    padding: 0.5rem;
+    font-size: 2.2rem;
 }
 
-.main-download {
-    font-size: 1.5rem;
+.download-btn:hover, .copy-btn:hover, .both-download-btn {
+    transform: scale(1.05);
 }
 
 /* Download both button container */
