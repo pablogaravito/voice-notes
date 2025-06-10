@@ -52,6 +52,11 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
+button:disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
 h1 {
     color: var(--heading-color);
     text-align: center;
@@ -365,6 +370,10 @@ h1 {
     /* Interaction */
     cursor: pointer;
     transition: all 0.3s;
+}
+
+.download-btn:hover, .copy-btn:hover {
+    transform: scale(1.05);
 }
 
 .main-download {
