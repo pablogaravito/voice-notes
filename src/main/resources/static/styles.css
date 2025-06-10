@@ -183,6 +183,11 @@ h1 {
     height: 1.25rem;
 }
 
+.copy-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
 .main-download {
     padding: 10px 20px;
     font-size: 15px;
@@ -311,9 +316,7 @@ h1 {
     overflow: hidden; /* Prevents content from overflowing */
 }
 
-.transcription-result > .download-btn {
-    margin: 0.8rem auto 0 auto;
-}
+
 
 .textAreas {
     height: 220px;
@@ -350,7 +353,7 @@ h1 {
     align-items: center;
 }
 
-.download-btn {
+.download-btn, .copy-btn {
     background-color: #3498db;
     color: white;
     border: none;
@@ -375,7 +378,7 @@ h1 {
 }
 
 /* Download both button container */
-.download-btn-container {
+.btn-container {
     display: flex;
     justify-content: flex-end;
     text-align: right;
