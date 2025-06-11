@@ -121,6 +121,12 @@ h1 {
     100% { transform: scale(1); }
 }
 
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-3px); }
+    40%, 80% { transform: translateX(3px); }
+}
+
 .status {
     text-align: center;
     margin: 10px 0;
@@ -370,6 +376,16 @@ h1 {
     /* Interaction */
     cursor: pointer;
     transition: all 0.3s;
+}
+
+.copy-btn.success {
+    background-color: #4CAF50; /* Green */
+    animation: pulse 0.5s;
+}
+
+.copy-btn.error {
+    background-color: #f44336; /* Red */
+    animation: shake 0.5s;
 }
 
 .both-download-btn {
