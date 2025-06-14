@@ -130,15 +130,13 @@ document.addEventListener("DOMContentLoaded", function () {
             const validation = validateAudioFile(file);
 
             if (validation.isValid) {
-//                showFileInfo(file, validation);
-                statusMessage.textContent = `✅ Archivo listo para procesar: ${file.name}`;
+                showStatusMessage(statusMessage, `Archivo listo para procesar: ${file.name}`);
                 hideResults();
                 disableInputs();
                 handleAudioFile(file);
                 enableInputs();
             } else {
-//                showError(validation.error);
-                statusMessage.textContent = `❌ Error: ${validation.error}`;
+                showStatusMessage(statusMessage, `Error: ${validation.error}`, false);
             }
         }
 
@@ -279,7 +277,7 @@ document.addEventListener("DOMContentLoaded", function () {
                       Accept: "application/json"
                   }
           });
-          statusMessage.textContent = 'Transcripción completada.';
+          showStatusMessage(statusMessage, 'Transcripción completada.');
           enableInputs();
           hideLoading();
             if (engineSelect.value === "BOTH") {
@@ -307,7 +305,7 @@ document.addEventListener("DOMContentLoaded", function () {
       statusMessage.textContent = "Grabando... Habla ahora";
     } catch (error) {
       console.error("Error al acceder al micrófono:", error);
-      statusMessage.textContent = `Error: ${error.message}`;
+      showStatusMessage(statusMessage, `Error: ${error.message}`, false);
     }
   }
 
@@ -360,7 +358,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }
           enableInputs();
         hideLoading();
-        statusMessage.textContent = 'Transcripción completada.';
+        showStatusMessage(statusMessage, 'Transcripción completada.');
           if (engineSelect.value === "BOTH") {
           // Parse JSON response for dual engines
               const results = await response.json();
@@ -378,8 +376,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     } catch (error) {
         console.error('Full error details:', error);
-        statusMessage.textContent = 'Error al procesar el archivo: ' +
-            (error.message || 'Error desconocido');
+        showStatusMessage(statusMessage, 'Error al procesar el archivo: ' + (error.message || 'Error desconocido'), false);
     }
   }
 
@@ -502,9 +499,18 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById('loadingOverlay').style.display = 'flex';
   }
 
-  // Function to hide loading overlay
   function hideLoading() {
       document.getElementById('loadingOverlay').style.display = 'none';
+  }
+
+  function showStatusMessage(element, message, isSuccess = true, duration = 3000) {
+      // Set the message with appropriate emoji
+      element.textContent = `${isSuccess ? '✅ ' : '❌ '} ${message}`;
+
+      // Return to standby after duration
+      setTimeout(() => {
+          element.textContent = STANDBY_MSG;
+      }, duration);
   }
 
   const currentTheme = localStorage.getItem('theme') ||
@@ -587,23 +593,20 @@ document.addEventListener("DOMContentLoaded", function () {
         if (success) {
           button.classList.add('success');
           button.innerHTML = COPY_SUCCESS_ICON;
-          statusMessage.textContent = 'Transcripción copiada al portapapeles.';
+          showStatusMessage(statusMessage, 'Transcripción copiada al portapapeles.');
           setTimeout(() => {
             button.classList.remove('success');
-            statusMessage.textContent = STANDBY_MSG;
             button.innerHTML = COPY_ICON;
-          }, 2000);
+          }, 3000);
         } else {
           button.classList.add('error');
-          statusMessage.textContent = 'No se pudo copiar la transcripción al portapapeles!';
+          showStatusMessage(statusMessage, 'No se pudo copiar la transcripción al portapapeles!', false);
           button.innerHTML = COPY_FAIL_ICON;
           setTimeout(() => {
             button.classList.remove('error');
-            button.textContent = STANDBY_MSG;
             button.innerHTML = COPY_ICON;
-          }, 2000);
+          }, 3000);
         }
       });
     });
-
 });
