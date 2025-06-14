@@ -62,6 +62,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const STANDBY_MSG = 'Esperando acción del usuario...';
 
+        const SUPPORTED_AUDIO_EXTENSIONS = [
+            // Pure audio formats
+            'mp3', 'wav', 'flac', 'aac', 'ogg', 'wma', 'm4a', 'opus',
+            'aiff', 'aif', 'au', 'ra', '3gp', 'amr', 'ac3', 'dts', 'mp2',
+            // Video containers that often contain audio
+            'mp4', 'mov', 'avi', 'mkv', 'webm', 'm4v', 'wmv', 'asf', 'vob'
+        ];
+
+        // MIME types for additional validation
+        const SUPPORTED_MIME_TYPES = [
+            // Audio MIME types
+            'audio/mpeg', 'audio/wav', 'audio/wave', 'audio/x-wav',
+            'audio/flac', 'audio/aac', 'audio/ogg', 'audio/vorbis',
+            'audio/opus', 'audio/x-ms-wma', 'audio/m4a', 'audio/x-m4a',
+            'audio/aiff', 'audio/x-aiff', 'audio/basic', 'audio/x-realaudio',
+            'audio/3gpp', 'audio/amr', 'audio/ac3', 'audio/mp2',
+            // Video MIME types (for containers with audio)
+            'video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska',
+            'video/webm', 'video/x-ms-wmv', 'video/x-ms-asf', 'video/dvd'
+        ];
+
   let mediaRecorder;
   let audioChunks = [];
   let audioContext;
@@ -69,6 +90,99 @@ document.addEventListener("DOMContentLoaded", function () {
   let dataArray;
   let canvasCtx;
   let animationId;
+
+  // File input change handler
+  audioUpload.addEventListener('change', handleFileSelect);
+
+  // Drag and drop handlers
+  uploadContainer.addEventListener('dragover', handleDragOver);
+  uploadContainer.addEventListener('dragleave', handleDragLeave);
+  uploadContainer.addEventListener('drop', handleDrop);
+
+		function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                validateAndProcessFile(file);
+            }
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadContainer.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadContainer.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadContainer.classList.remove('dragover');
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                validateAndProcessFile(files[0]);
+            }
+        }
+
+        function validateAndProcessFile(file) {
+            const validation = validateAudioFile(file);
+
+            if (validation.isValid) {
+//                showFileInfo(file, validation);
+                statusMessage.textContent = `✅ Archivo listo para procesar: ${file.name}`;
+                hideResults();
+                disableInputs();
+                handleAudioFile(file);
+                enableInputs();
+            } else {
+//                showError(validation.error);
+                statusMessage.textContent = `❌ Error: ${validation.error}`;
+            }
+        }
+
+        function validateAudioFile(file) {
+            // Get file extension
+            const extension = file.name.split('.').pop().toLowerCase();
+
+            // Check file size (optional - adjust as needed)
+            const maxSize = 500 * 1024 * 1024; // 500MB
+            if (file.size > maxSize) {
+                return {
+                    isValid: false,
+                    error: 'El archivo es muy grande. Tamaño máximo: 500 MBs.'
+                };
+            }
+
+            // Validate by extension
+            if (!SUPPORTED_AUDIO_EXTENSIONS.includes(extension)) {
+                return {
+                    isValid: false,
+                    error: `Formato no compatible: .${extension}. Por favor, usa un formato de audio soportado.`
+                };
+            }
+
+            // Validate by MIME type (if available)
+            if (file.type && !SUPPORTED_MIME_TYPES.includes(file.type)) {
+                // Some browsers might not set MIME type correctly, so this is a soft check
+                console.warn('MIME type not in supported list, but extension is valid:', file.type);
+            }
+
+            // Additional validation for video containers
+            if (['mp4', 'mov', 'avi', 'mkv', 'webm', 'm4v'].includes(extension)) {
+                return {
+                    isValid: true,
+                    warning: 'Video container detected. FFmpeg will extract audio track.',
+                    isVideoContainer: true
+                };
+            }
+
+            return {
+                isValid: true,
+                extension: extension
+            };
+        }
 
   // Set up audio context when user interacts first (to avoid browser restrictions)
   function setupAudioContext() {
@@ -214,41 +328,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   uploadButton.addEventListener('click', () => {
       audioUpload.click();
-  });
-
-  audioUpload.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-          // Validate file type
-          const validTypes = [
-              'audio/mpeg',          // .mp3
-              'audio/ogg',           // .ogg
-              'audio/wav',           // .wav
-              'audio/flac',          // .flac
-              'audio/x-m4a',         // .m4a
-              'audio/aac',           // .aac
-              'audio/webm',          // .webm
-              'audio/aiff',          // .aiff
-              'audio/amr',           // .amr
-              'audio/x-ms-wma',      // .wma
-              'audio/mp4',           // .mp4 (audio)
-              'audio/x-aiff',        // alternative for aiff
-              'audio/x-wav'          // alternative for wav
-          ];
-
-//          if (!validTypes.includes(file.type)) {
-//              fileInfo.textContent = 'Formato no soportado.';
-//              return;
-//          }
-
-          //fileInfo.textContent = `Archivo seleccionado: ${file.name}`;
-
-          // Here you would handle the file upload to your backend
-          hideResults();
-          disableInputs();
-          handleAudioFile(file);
-          enableInputs();
-      }
   });
 
   async function handleAudioFile(file) {

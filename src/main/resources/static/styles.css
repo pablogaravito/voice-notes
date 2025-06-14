@@ -18,6 +18,12 @@
   --shadow-color: rgba(0, 0, 0, 0.1);
   --pulse-animation: pulse 1.5s infinite;
   --action-btn: #4f46e5;
+  --audio-border-color: #ccc;
+  --audio-container-bg: #f9f9f9;
+  --audio-shadow-color: rgba(0, 0, 0, 0.1);
+  --audio-button-bg: #007bff;
+  --audio-hover-bg: #f0f8ff;
+  --audio-dragover-bg: #e3f2fd;
 }
 
 [data-theme="dark"] {
@@ -40,6 +46,12 @@
   --shadow-color: rgba(0, 0, 0, 0.3);
   --pulse-animation: dark-pulse 1.5s infinite;
   --action-btn: #6366f1;
+  --audio-border-color: #555;
+  --audio-container-bg: #2d2d2d;
+  --audio-shadow-color: rgba(0, 0, 0, 0.3);
+  --audio-button-bg: #2980b9;
+  --audio-hover-bg: #3a3a3a;
+  --audio-dragover-bg: #404040;
 }
 
 body {
@@ -238,12 +250,29 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px dashed #ccc;
     margin-bottom: 10px;
+    /* border: 2px dashed #ccc; */
+    border: 2px dashed var(--audio-border-color);
+    background-color: var(--audio-container-bg);
+    box-shadow: 0 2px 8px var(--audio-shadow-color);
 }
 
 .upload-container h3 {
     text-align: center;
+}
+
+.upload-container:hover {
+    /* border-color: #007bff; */
+    /* background-color: #f0f8ff; */
+    border-color: var(--audio-button-bg);
+    background-color: var(--audio-hover-bg);
+}
+
+.upload-container.dragover {
+    /* border-color: #007bff; */
+    /* background-color: #e3f2fd; */
+    border-color: var(--audio-button-bg);
+    background-color: var(--audio-dragover-bg);
 }
 
 /* File info text styling */
