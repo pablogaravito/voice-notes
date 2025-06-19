@@ -308,7 +308,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 whisperOptions.style.display = (isWhisper && showTimestamps.checked) ? 'block' : 'none';
 
-                singleModelName.textContent = engineSelect.value === "VOSK" ? "VOSK:" : "WHISPER CPP:";
+                singleModelName.textContent = isWhisper ? "WHISPER CPP:" : "VOSK:";
 
                 document.getElementById('transcriptionText').innerText = resultText || "(No se detectó habla)";
             };
@@ -404,7 +404,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
               whisperOptions.style.display = (isWhisper && showTimestamps.checked) ? 'block' : 'none';
 
-              singleModelName.textContent = engineSelect.value === "VOSK" ? "VOSK:" : "WHISPER CPP:";
+              singleModelName.textContent = isWhisper ? "WHISPER CPP:" : "VOSK:";
               document.getElementById('transcriptionText').innerText = resultText || "(No se detectó habla)";
           };
 
