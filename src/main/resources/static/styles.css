@@ -492,6 +492,10 @@ h1 {
     width: 100%;
 }
 
+.whisper-options {
+    margin-right: auto;
+}
+
 /* Responsive fixes for mobile */
 @media (max-width: 768px) {
     .dual-results .both-result {

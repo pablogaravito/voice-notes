@@ -72,6 +72,11 @@
                 <h3 id="singleModelName"></h3>
                 <div id="transcriptionText" class="textAreas" contenteditable="true"></div>
                 <div class="btn-container">
+                    <div class="whisper-options">
+                        <label>
+                            <input type="checkbox" id="whisperPostProcess"> Limpiar Timestamps
+                        </label>
+                    </div>
                     <button
                          id="copyText"
                          class="copy-btn"
@@ -101,6 +106,11 @@
                     <h3>Whisper.cpp:</h3>
                     <div id="whisperText" class="textAreas" contenteditable="true"></div>
                     <div class="btn-container">
+                        <div class="whisper-options">
+                            <label>
+                                <input type="checkbox" id="whisperPostProcess"> Limpiar Timestamps
+                            </label>
+                        </div>
                         <button
                                 id="copyWhisperText"
                                 class="copy-btn"

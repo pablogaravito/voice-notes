@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const themeToggle = document.getElementById('themeToggle');
   const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
   const uploadContainer = document.getElementById('uploadContainer');
+  const showTimestamps = document.getElementById('showTimestamps');
 
   const DARK_ICON = `
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -266,7 +267,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const url = new URL('/api/audio/transcribe', window.location.origin);
           url.search = new URLSearchParams({
               engine: engineSelect.value,
-              timestamps: document.getElementById('showTimestamps').checked
+              timestamps: showTimestamps.checked
           });
 
       	const response = await fetch(url, {
@@ -285,13 +286,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 const results = await response.json();
                 singleResult.classList.add('hidden');
                 dualResults.classList.remove('hidden');
+
+                // Show Whisper checkbox ONLY if "Generar timestamps" is checked
+                document.querySelector('#dualResults .whisper-options').style.display = showTimestamps.checked ? 'block' : 'none';
+
+                // Hide the one in single mode (cleanup)
+                document.querySelector('#singleResult .whisper-options').style.display = 'none';
+
                 document.getElementById('whisperText').innerText = results.whisper || "(No se detectó habla)";
                 document.getElementById('voskText').innerText = results.vosk || "(No se detectó habla)";
             } else {
-                singleModelName.textContent = engineSelect.value === "VOSK" ? "VOSK:" : "WHISPER CPP:";
+
                 const resultText = await response.text();
                 singleResult.classList.remove('hidden');
                 dualResults.classList.add('hidden');
+
+                // Show checkbox ONLY if Whisper is selected AND "Generar timestamps" is checked
+                const isWhisper = engineSelect.value === "WHISPER";
+
+                const whisperOptions = document.querySelector('#singleResult .whisper-options');
+
+                whisperOptions.style.display = (isWhisper && showTimestamps.checked) ? 'block' : 'none';
+
+                singleModelName.textContent = engineSelect.value === "VOSK" ? "VOSK:" : "WHISPER CPP:";
+
                 document.getElementById('transcriptionText').innerText = resultText || "(No se detectó habla)";
             };
         }
@@ -340,7 +358,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const url = new URL('/api/audio/transcribe-file', window.location.origin);
           url.search = new URLSearchParams({
                         engine: engineSelect.value,
-                        timestamps: document.getElementById('showTimestamps').checked
+                        timestamps: showTimestamps.checked
           });
 
           const response = await fetch(url, {
@@ -364,13 +382,29 @@ document.addEventListener("DOMContentLoaded", function () {
               const results = await response.json();
               singleResult.classList.add('hidden');
               dualResults.classList.remove('hidden');
+
+              // Show Whisper checkbox ONLY if "Generar timestamps" is checked
+              document.querySelector('#dualResults .whisper-options').style.display = showTimestamps.checked ? 'block' : 'none';
+
+              // Hide the one in single mode (cleanup)
+              document.querySelector('#singleResult .whisper-options').style.display = 'none';
+
               document.getElementById('whisperText').innerText = results.whisper || "(No se detectó habla)";
               document.getElementById('voskText').innerText = results.vosk || "(No se detectó habla)";
           } else {
-              singleModelName.textContent = engineSelect.value === "VOSK" ? "VOSK:" : "WHISPER CPP:";
+
               const resultText = await response.text();
               singleResult.classList.remove('hidden');
               dualResults.classList.add('hidden');
+
+              // Show checkbox ONLY if Whisper is selected AND "Generar timestamps" is checked
+              const isWhisper = engineSelect.value === "WHISPER";
+
+              const whisperOptions = document.querySelector('#singleResult .whisper-options');
+
+              whisperOptions.style.display = (isWhisper && showTimestamps.checked) ? 'block' : 'none';
+
+              singleModelName.textContent = engineSelect.value === "VOSK" ? "VOSK:" : "WHISPER CPP:";
               document.getElementById('transcriptionText').innerText = resultText || "(No se detectó habla)";
           };
 
