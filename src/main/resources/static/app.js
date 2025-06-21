@@ -242,6 +242,63 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 300);
   }
 
+function setupUIForProcessing() {
+    disableInputs();
+    showLoading();
+    hideResults();
+    statusMessage.textContent = 'Procesando audio...';
+}
+
+function handleProcessingComplete() {
+    enableInputs();
+    hideLoading();
+    showStatusMessage(statusMessage, 'Transcripción completada.');
+}
+
+function showSingleResult() {
+	singleResult.classList.remove('hidden');
+    dualResults.classList.add('hidden');
+}
+
+function showDualResults() {
+    singleResult.classList.add('hidden');
+    dualResults.classList.remove('hidden');
+}
+
+async function handleTranscriptionResponse(response) {
+    if (engineSelect.value === "BOTH") {
+        // Parse JSON response for dual engines
+        const results = await response.json();
+        showDualResults();
+
+        // Show Whisper checkbox ONLY if "Generar timestamps" is checked
+        document.querySelector('#dualResults .whisper-options').style.display =
+            showTimestamps.checked ? 'block' : 'none';
+        document.querySelector('#singleResult .whisper-options').style.display = 'none';
+
+        document.getElementById('whisperText').innerText = results.whisper || "(No se detectó habla)";
+        document.getElementById('voskText').innerText = results.vosk || "(No se detectó habla)";
+    } else {
+        const resultText = await response.text();
+        showSingleResult();
+
+        const isWhisper = engineSelect.value === "WHISPER";
+        const whisperOptions = document.querySelector('#singleResult .whisper-options');
+        whisperOptions.style.display = (isWhisper && showTimestamps.checked) ? 'block' : 'none';
+
+        singleModelName.textContent = isWhisper ? "WHISPER CPP:" : "VOSK:";
+        document.getElementById('transcriptionText').innerText = resultText || "(No se detectó habla)";
+    }
+}
+
+function createTranscriptionUrl(endpoint) {
+    const url = new URL(endpoint, window.location.origin);
+    url.search = new URLSearchParams({
+        engine: engineSelect.value,
+        timestamps: showTimestamps.checked
+    });
+    return url;
+}
   // Start recording
   async function startRecording() {
     try {
@@ -258,87 +315,50 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       mediaRecorder.onstop = async () => {
-      	stopVisualization();
+            stopVisualization();
+            const audioBlob = new Blob(audioChunks);
 
-          // Create Blob without specifying type - use what the recorder actually produced
-          const audioBlob = new Blob(audioChunks);
-          disableInputs();
-          showLoading();
-          const url = new URL('/api/audio/transcribe', window.location.origin);
-          url.search = new URLSearchParams({
-              engine: engineSelect.value,
-              timestamps: showTimestamps.checked
-          });
+            setupUIForProcessing();
+            try {
+                const url = createTranscriptionUrl('/api/audio/transcribe');
+                const response = await fetch(url, {
+                    method: "POST",
+                    body: audioBlob,
+                    headers: {
+                        "Content-Type": audioBlob.type,
+                        Accept: "application/json"
+                    }
+                });
+                await handleTranscriptionResponse(response);
+                handleProcessingComplete();
+            } catch (error) {
+                showStatusMessage(statusMessage, `Error: ${error.message}`, false);
+                enableInputs();
+                hideLoading();
+            }
+        };
 
-      	const response = await fetch(url, {
-              method: "POST",
-              body: audioBlob,
-              headers: {
-                      "Content-Type": audioBlob.type,
-                      Accept: "application/json"
-                  }
-          });
-          showStatusMessage(statusMessage, 'Transcripción completada.');
-          enableInputs();
-          hideLoading();
-            if (engineSelect.value === "BOTH") {
-                // Parse JSON response for dual engines
-                const results = await response.json();
-                singleResult.classList.add('hidden');
-                dualResults.classList.remove('hidden');
+        mediaRecorder.start(100); // Collect data every 100ms
 
-                // Show Whisper checkbox ONLY if "Generar timestamps" is checked
-                document.querySelector('#dualResults .whisper-options').style.display = showTimestamps.checked ? 'block' : 'none';
-
-                // Hide the one in single mode (cleanup)
-                document.querySelector('#singleResult .whisper-options').style.display = 'none';
-
-                document.getElementById('whisperText').innerText = results.whisper || "(No se detectó habla)";
-                document.getElementById('voskText').innerText = results.vosk || "(No se detectó habla)";
-            } else {
-
-                const resultText = await response.text();
-                singleResult.classList.remove('hidden');
-                dualResults.classList.add('hidden');
-
-                // Show checkbox ONLY if Whisper is selected AND "Generar timestamps" is checked
-                const isWhisper = engineSelect.value === "WHISPER";
-
-                const whisperOptions = document.querySelector('#singleResult .whisper-options');
-
-                whisperOptions.style.display = (isWhisper && showTimestamps.checked) ? 'block' : 'none';
-
-                singleModelName.textContent = isWhisper ? "WHISPER CPP:" : "VOSK:";
-
-                document.getElementById('transcriptionText').innerText = resultText || "(No se detectó habla)";
-            };
-        }
-
-      mediaRecorder.start(100); // Collect data every 100ms
-
-      // Update UI
-      hideResults();
-      recordButton.innerHTML = `${STOP_RECORD_ICON} Detener Grabación`;
-      recordButton.classList.add("recording");
-      statusMessage.textContent = "Grabando... Habla ahora";
+        // Update UI
+        recordButton.innerHTML = `${STOP_RECORD_ICON} Detener Grabación`;
+        recordButton.classList.add("recording");
+        statusMessage.textContent = "Grabando... Habla ahora";
     } catch (error) {
-      console.error("Error al acceder al micrófono:", error);
-      showStatusMessage(statusMessage, `Error: ${error.message}`, false);
+        console.error("Error al acceder al micrófono:", error);
+        showStatusMessage(statusMessage, `Error: ${error.message}`, false);
     }
-  }
+}
 
   // Stop recording
   function stopRecording() {
     if (mediaRecorder && mediaRecorder.state !== "inactive") {
       mediaRecorder.stop();
-
-      // Stop all tracks
       mediaRecorder.stream.getTracks().forEach((track) => track.stop());
 
       // Update UI
       recordButton.innerHTML = `${RECORD_ICON} Comenzar Grabación`;
       recordButton.classList.remove("recording");
-      statusMessage.textContent = "Procesando audio...";
     }
   }
 
@@ -347,70 +367,31 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   async function handleAudioFile(file) {
-      // Show loading state
-      statusMessage.textContent = 'Procesando archivo de audio...';
-    disableInputs();
-    showLoading();
+     setupUIForProcessing();
       try {
           const formData = new FormData();
           formData.append('file', file);
 
-          const url = new URL('/api/audio/transcribe-file', window.location.origin);
-          url.search = new URLSearchParams({
-                        engine: engineSelect.value,
-                        timestamps: showTimestamps.checked
-          });
-
+          const url = createTranscriptionUrl('/api/audio/transcribe-file');
           const response = await fetch(url, {
-              method: 'POST',
-              body: formData,
-              headers: {
-                  'Accept': 'application/json'
-              }
+             method: 'POST',
+             body: formData,
+             headers: {
+                'Accept': 'application/json'
+             }
           });
 
           if (!response.ok) {
               const errorText = await response.text();
-              console.error('Server responded with:', errorText);
               throw new Error(`Server error: ${response.status} - ${errorText}`);
           }
-          enableInputs();
-        hideLoading();
-        showStatusMessage(statusMessage, 'Transcripción completada.');
-          if (engineSelect.value === "BOTH") {
-          // Parse JSON response for dual engines
-              const results = await response.json();
-              singleResult.classList.add('hidden');
-              dualResults.classList.remove('hidden');
-
-              // Show Whisper checkbox ONLY if "Generar timestamps" is checked
-              document.querySelector('#dualResults .whisper-options').style.display = showTimestamps.checked ? 'block' : 'none';
-
-              // Hide the one in single mode (cleanup)
-              document.querySelector('#singleResult .whisper-options').style.display = 'none';
-
-              document.getElementById('whisperText').innerText = results.whisper || "(No se detectó habla)";
-              document.getElementById('voskText').innerText = results.vosk || "(No se detectó habla)";
-          } else {
-
-              const resultText = await response.text();
-              singleResult.classList.remove('hidden');
-              dualResults.classList.add('hidden');
-
-              // Show checkbox ONLY if Whisper is selected AND "Generar timestamps" is checked
-              const isWhisper = engineSelect.value === "WHISPER";
-
-              const whisperOptions = document.querySelector('#singleResult .whisper-options');
-
-              whisperOptions.style.display = (isWhisper && showTimestamps.checked) ? 'block' : 'none';
-
-              singleModelName.textContent = isWhisper ? "WHISPER CPP:" : "VOSK:";
-              document.getElementById('transcriptionText').innerText = resultText || "(No se detectó habla)";
-          };
+          await handleTranscriptionResponse(response);
+          handleProcessingComplete();
 
     } catch (error) {
-        console.error('Full error details:', error);
         showStatusMessage(statusMessage, 'Error al procesar el archivo: ' + (error.message || 'Error desconocido'), false);
+        enableInputs();
+        hideLoading();
     }
   }
 
