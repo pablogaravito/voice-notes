@@ -35,3 +35,4 @@ build/
 models/
 native-bin/ffmpeg.exe
 tmp/
+history/

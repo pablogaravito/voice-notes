@@ -472,7 +472,15 @@ function createTranscriptionUrl(endpoint) {
   });
 
   function downloadTextAsFile(textareaId, filename) {
-      const text = document.getElementById(textareaId).innerText;
+      let text = document.getElementById(textareaId).innerText;
+    // Check if this is a whisper text and checkbox is checked
+    if ((textareaId === 'whisperText' || textareaId === 'transcriptionText') &&
+        document.getElementById('whisperPostProcess').checked) {
+        console.log(text);
+        text = removeTimestamps(text);
+        console.log(text);
+    }
+
       const blob = new Blob([text], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
 
@@ -489,7 +497,10 @@ function createTranscriptionUrl(endpoint) {
   }
 
   function downloadCombinedTextAsFile() {
-      const text1 = document.getElementById('whisperText').innerText;
+      let text1 = document.getElementById('whisperText').innerText;
+    if (document.getElementById('whisperPostProcess').checked) {
+        text1 = removeTimestamps(text1);
+    }
       const text2 = document.getElementById('voskText').innerText;
 
       // Using template literals for clean multiline string
@@ -561,6 +572,17 @@ function createTranscriptionUrl(endpoint) {
     });
   }
 
+  function removeTimestamps(text) {
+    // This regex matches timestamps like [00:00-00:10] including the brackets
+    const timestampRegex = /\[\d{2}:\d{2}-\d{2}:\d{2}\]/g;
+
+    // Replace all timestamps with empty string
+    const cleanText = text.replace(timestampRegex, '').trim();
+
+    // Clean up any leftover spaces or line breaks caused by the removal
+    return cleanText.replace(/\s+/g, ' ').replace(/\s+([,.!?])/g, '$1');
+  }
+
   async function copyEditableContent(targetId) {
     const div = document.getElementById(targetId);
     if (!div) {
@@ -568,7 +590,15 @@ function createTranscriptionUrl(endpoint) {
       return false;
     }
 
-    const text = div.textContent;
+    let text = div.textContent;
+
+    // Check if this is a whisper text and checkbox is checked
+    if ((targetId === 'whisperText' || targetId === 'transcriptionText') &&
+       document.getElementById('whisperPostProcess').checked) {
+       console.log(text);
+       text = removeTimestamps(text);
+       console.log(text);
+    }
 
     try {
       if (navigator.clipboard) {
@@ -582,7 +612,6 @@ function createTranscriptionUrl(endpoint) {
         document.execCommand('copy');
         document.body.removeChild(textarea);
       }
-      console.log('Copied:', text);
       return true;
     } catch (err) {
       console.error('Copy failed:', err);
