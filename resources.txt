@@ -1,2 +1,14 @@
 Whisper Models:
 https://huggingface.co/ggerganov/whisper.cpp/tree/main
+
+Vosk Spanish Models:
+https://alphacephei.com/vosk/models
+
+----------------------------------------
+
+Dir Structure:
+
+models/whisper-models/whisper-cpp-small/ggml-small.bin
+models/whisper-models/whisper-cpp-tiny-q8/ggml-tiny-q8_0.bin
+models/vosk-models/vosk-model-es-0.42
+models/models/vosk-models/vosk-model-small-es-0.42
