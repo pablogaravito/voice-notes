@@ -474,11 +474,12 @@ function createTranscriptionUrl(endpoint) {
   function downloadTextAsFile(textareaId, filename) {
       let text = document.getElementById(textareaId).innerText;
     // Check if this is a whisper text and checkbox is checked
-    if ((textareaId === 'whisperText' || textareaId === 'transcriptionText') &&
-        document.getElementById('whisperPostProcess').checked) {
-        console.log(text);
+
+    if ((textareaId === 'whisperText' || textareaId === 'transcriptionText') && isWhisperPostProcessEnabled(textareaId)) {
+        console.log("Removing timestamps...");
+        console.log("Original text:", text);
         text = removeTimestamps(text);
-        console.log(text);
+        console.log("Cleaned text:", text);
     }
 
       const blob = new Blob([text], { type: 'text/plain' });
@@ -497,10 +498,10 @@ function createTranscriptionUrl(endpoint) {
   }
 
   function downloadCombinedTextAsFile() {
-      let text1 = document.getElementById('whisperText').innerText;
-    if (document.getElementById('whisperPostProcess').checked) {
+      let text1 =  document.getElementById('whisperText').innerText;
+      if (isWhisperPostProcessEnabled('whisperText')) {
         text1 = removeTimestamps(text1);
-    }
+      }
       const text2 = document.getElementById('voskText').innerText;
 
       // Using template literals for clean multiline string
@@ -572,32 +573,35 @@ function createTranscriptionUrl(endpoint) {
     });
   }
 
-  function removeTimestamps(text) {
-    // This regex matches timestamps like [00:00-00:10] including the brackets
-    const timestampRegex = /\[\d{2}:\d{2}-\d{2}:\d{2}\]/g;
+  function isWhisperPostProcessEnabled(targetId) {
+      // Check if we're in single or dual mode
+      const isSingleMode = document.getElementById('singleResult')?.classList.contains('hidden') === false;
+      const isDualMode = document.getElementById('dualResults')?.classList.contains('hidden') === false;
 
-    // Replace all timestamps with empty string
-    const cleanText = text.replace(timestampRegex, '').trim();
-
-    // Clean up any leftover spaces or line breaks caused by the removal
-    return cleanText.replace(/\s+/g, ' ').replace(/\s+([,.!?])/g, '$1');
+      if (targetId === 'transcriptionText' && isSingleMode) {
+          return document.getElementById('whisperPostProcessSingle')?.checked;
+      } else if (targetId === 'whisperText' && isDualMode) {
+          return document.getElementById('whisperPostProcessDual')?.checked;
+      }
+      return false;
   }
 
-  async function copyEditableContent(targetId) {
+function removeTimestamps(text) {
+    const timestampRegex = /\[\d{2}:\d{2}-\d{2}:\d{2}\]/g;
+    return text.replace(timestampRegex, '').trim().replace(/\s+/g, ' ').replace(/\s+([,.!?])/g, '$1');
+}
+
+// ===== COPY FUNCTION ===== //
+async function copyEditableContent(targetId) {
     const div = document.getElementById(targetId);
     if (!div) {
       console.error(`Element with ID ${targetId} not found`);
       return false;
     }
 
-    let text = div.textContent;
-
-    // Check if this is a whisper text and checkbox is checked
-    if ((targetId === 'whisperText' || targetId === 'transcriptionText') &&
-       document.getElementById('whisperPostProcess').checked) {
-       console.log(text);
-       text = removeTimestamps(text);
-       console.log(text);
+    let text = div.innerText;
+    if ((targetId === 'whisperText' || targetId === 'transcriptionText') && isWhisperPostProcessEnabled(targetId)) {
+        text = removeTimestamps(text);
     }
 
     try {
@@ -617,7 +621,7 @@ function createTranscriptionUrl(endpoint) {
       console.error('Copy failed:', err);
       return false;
     }
-  }
+}
 
     // Initialize theme
     setTheme(currentTheme);
