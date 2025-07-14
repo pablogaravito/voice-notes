@@ -49,7 +49,6 @@ public class AudioConversionService {
             logger.error("FFmpeg failed with exit code {}", exitCode);
             throw new RuntimeException("ffmpeg failed with exit code " + exitCode);
         }
-
         logger.info("Audio conversion completed successfully");
         return outputFile;
     }

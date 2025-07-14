@@ -64,7 +64,6 @@ public class VoskService {
             String transcription = jsonNode.get("text").asText();
 
             logger.info("Transcription completed successfully for file: {}", wavFile.getAbsolutePath());
-            logger.debug("Transcription result: {}", transcription);
 
             return transcription;
         } catch (Exception e) {

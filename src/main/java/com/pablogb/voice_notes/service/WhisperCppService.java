@@ -76,7 +76,6 @@ public class WhisperCppService {
             throw new IOException("Whisper process failed with exit code " + exitCode);
         }
         logger.info("Transcription completed successfully for file: {}", wavFile.getAbsolutePath());
-//        return readResultFile(timestamps ? outputTimestampsFile : outputTxtFile);
         return timestamps ? readResultFile(outputTimestampsFile) : cleanSRTToNaturalText(outputTxtFile.toPath());
     }
 

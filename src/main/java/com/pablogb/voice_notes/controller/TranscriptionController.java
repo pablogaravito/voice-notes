@@ -59,7 +59,7 @@ public class TranscriptionController {
                 audioFile.getOriginalFilename(),
                 audioFile.getSize(),
                 audioFile.getContentType());
-        log.info("boolean value received: {}", timestamps);
+        log.info("timestamps: {}", timestamps);
         try {
             byte[] audioBytes = audioFile.getBytes();
 

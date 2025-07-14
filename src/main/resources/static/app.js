@@ -67,21 +67,8 @@ document.addEventListener("DOMContentLoaded", function () {
             // Pure audio formats
             'mp3', 'wav', 'flac', 'aac', 'ogg', 'wma', 'm4a', 'opus',
             'aiff', 'aif', 'au', 'ra', '3gp', 'amr', 'ac3', 'dts', 'mp2',
-            // Video containers that often contain audio
+            // Video containers that may contain audio
             'mp4', 'mov', 'avi', 'mkv', 'webm', 'm4v', 'wmv', 'asf', 'vob'
-        ];
-
-        // MIME types for additional validation
-        const SUPPORTED_MIME_TYPES = [
-            // Audio MIME types
-            'audio/mpeg', 'audio/wav', 'audio/wave', 'audio/x-wav',
-            'audio/flac', 'audio/aac', 'audio/ogg', 'audio/vorbis',
-            'audio/opus', 'audio/x-ms-wma', 'audio/m4a', 'audio/x-m4a',
-            'audio/aiff', 'audio/x-aiff', 'audio/basic', 'audio/x-realaudio',
-            'audio/3gpp', 'audio/amr', 'audio/ac3', 'audio/mp2',
-            // Video MIME types (for containers with audio)
-            'video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska',
-            'video/webm', 'video/x-ms-wmv', 'video/x-ms-asf', 'video/dvd'
         ];
 
   let mediaRecorder;
@@ -160,12 +147,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     isValid: false,
                     error: `Formato no compatible: .${extension}. Por favor, usa un formato de audio soportado.`
                 };
-            }
-
-            // Validate by MIME type (if available)
-            if (file.type && !SUPPORTED_MIME_TYPES.includes(file.type)) {
-                // Some browsers might not set MIME type correctly, so this is a soft check
-                console.warn('MIME type not in supported list, but extension is valid:', file.type);
             }
 
             // Additional validation for video containers
