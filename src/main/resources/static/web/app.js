@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const validation = validateAudioFile(file);
 
             if (validation.isValid) {
-                showStatusMessage(statusMessage, `Archivo listo para procesar: ${file.name}`);
+                showStatusMessage(statusMessage, `Archivo listo para procesar: ${file.name}`, true, 0);
                 hideResults();
                 disableInputs();
                 handleAudioFile(file);
@@ -514,11 +514,13 @@ function createTranscriptionUrl(endpoint) {
   function showStatusMessage(element, message, isSuccess = true, duration = 3000) {
       // Set the message with appropriate emoji
       element.textContent = `${isSuccess ? '✅ ' : '❌ '} ${message}`;
+      // duration = 0 means no return to stand by msg
 
-      // Return to standby after duration
-      setTimeout(() => {
-          element.textContent = STANDBY_MSG;
-      }, duration);
+      if (duration !== 0) {
+        setTimeout(() => {
+           element.textContent = STANDBY_MSG;
+        }, duration);
+      }
   }
 
   const currentTheme = localStorage.getItem('theme') ||
