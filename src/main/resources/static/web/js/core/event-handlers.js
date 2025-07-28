@@ -139,8 +139,18 @@ export class EventHandlers {
 
         if (engineSelect) {
             engineSelect.addEventListener('change', () => {
-                //clear previous results when engine changes
                 this.ui.hideResults();
+                const showTimestamps = this.dom.showTimestamps;
+                const label = showTimestamps.parentElement;
+
+                if (engineSelect.value === 'VOSK') {
+                    showTimestamps.disabled = true;
+                    showTimestamps.checked = false;
+                    label.classList.add('disabled');
+                } else {
+                    showTimestamps.disabled = false;
+                    label.classList.remove('disabled');
+                }
             });
         }
     }

@@ -198,8 +198,20 @@ h1 {
     display: flex;
     align-items: center;
     gap: 8px;
-    cursor: pointer;
     user-select: none;
+}
+
+/* timestamp checkbox enabled */
+.timestamp-label:not(.disabled),
+.timestamp-label:not(.disabled) input[type="checkbox"] {
+    cursor: pointer;
+}
+
+/* timestamp checkbox disabled */
+.timestamp-label.disabled,
+.timestamp-label.disabled input[type="checkbox"] {
+    cursor: default;
+    opacity: 0.7;
 }
 
 /* File upload styles */
