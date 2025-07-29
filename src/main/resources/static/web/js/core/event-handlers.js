@@ -185,9 +185,22 @@ export class EventHandlers {
     setupKeyboardShortcuts() {
         document.addEventListener('keydown', (e) => {
             //Space bar to toggle recording (when not focused on input elements)
-            if (e.code === 'Space' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
-                e.preventDefault();
-                this.audioRecorder.toggleRecording();
+            if (e.code === 'Space') {
+                const target = e.target;
+                const tagName = target.tagName?.toLowerCase();
+
+                //check if we're in any editable element
+                const isEditable =
+                    ['input', 'textarea', 'select'].includes(tagName) ||
+                    target.contentEditable === 'true' ||
+                    target.getAttribute('role') === 'textbox' ||
+                    //check if any parent is contenteditable
+                    target.closest('[contenteditable="true"]') !== null;
+
+                if (!isEditable) {
+                    e.preventDefault();
+                    this.audioRecorder.toggleRecording();
+                }
             }
 
             //Escape to stop recording
